@@ -1,21 +1,23 @@
-// ## Bubble Sort ##
+// ## Selection Sort ##
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define tam 10
 
-// Bubble Sort
-void bubbleSort (int A[]){
-    int i, j, temp;
+// Selection Sort
+void selectionSort (int A[]){
+    int i, j, min, temp;
     for (i = 0; i < tam - 1; i++) {
-        for (j = 0; j < tam - i - 1; j++) {
-            if(A[j] > A[j + 1]) {
-                temp = A[j];
-                A[j] = A[j + 1];
-                A[j + 1] = temp;
+        min = i;
+        for (j = i + 1; j < tam; j++) {
+            if (A[j] < A[min]) {
+                min = j;
             }
         }
+        temp = A[min];
+        A[min] = A[i];
+        A[i] = temp;
     }
 }
 
@@ -46,14 +48,14 @@ int main () {
     // Declarações
     int A[tam] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
     
-    printf("## Bubble Sort ##\n");
+    printf("## Selection Sort ##\n");
 
     // Exibindo o vetor desordenado
     printf("Vetor inicial: ");
     imprimeVetor(A);
 
     // Ordenando o vetor
-    bubbleSort(A);
+    selectionSort(A);
 
     // Exibindo o vetor ordenado
     printf("\nVetor ordenado: ");

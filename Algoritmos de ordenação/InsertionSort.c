@@ -1,11 +1,11 @@
-/*Algoritmo Insertion Sort*/
+// ## Insertion Sort ##
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define tam 10
 
-//Insertion sort
+//Insertion Sort
 void insertionSort (int A[]){
     int i, j, temp;
     for (j = 1; j < tam; j++){
