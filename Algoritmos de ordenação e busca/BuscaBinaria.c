@@ -61,9 +61,9 @@ int main () {
     printf("\n");
 
     // Realizando a busca binária
-    int resultado = buscaBinaria(A, 8); // Procurando o valor 8 no vetor
-    if (resultado != -1) {
-        printf("Valor encontrado na posição %d.\n", resultado);
+    int pos = buscaBinaria(A, 8); // Procurando o valor 8 no vetor
+    if (pos != -1) {
+        printf("Valor encontrado na posição %d.\n", pos);
     } else {
         printf("Valor não encontrado\n");
     }
