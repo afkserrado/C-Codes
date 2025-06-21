@@ -1,24 +1,29 @@
-// ## Selection Sort ##
+// ## Busca Binária ##
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define tam 10
 
-// Selection Sort
-void selectionSort (int A[]){
-    int i, j, min, temp;
-    for (i = 0; i < tam - 1; i++) {
-        min = i;
-        for (j = i + 1; j < tam; j++) {
-            if (A[j] < A[min]) {
-                min = j;
-            }
+int buscaBinaria (int A[], int k){
+    int ini = 0;
+    int fim = tam - 1;
+    int meio;
+
+    while (ini <= fim) {
+        meio = (ini + fim) / 2;
+        if (k < A[meio]) {
+            fim = meio - 1;
+        } 
+        else if (k > A[meio]) {
+            ini = meio + 1;
+        } 
+        else {
+            return meio; // Retorna o índice onde o valor foi encontrado
         }
-        temp = A[min];
-        A[min] = A[i];
-        A[i] = temp;
     }
+
+    return -1; // Retorna -1 se o valor não for encontrado
 }
 
 // Imprimindo o vetor
@@ -46,19 +51,20 @@ int main () {
     #endif
 
     // Declarações
-    int A[tam] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    int A[tam] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // Vetor já ordenados
     
-    printf("## Selection Sort ##\n");
+    printf("## Busca Binária ##\n");
 
     // Exibindo o vetor desordenado
     printf("Vetor inicial: ");
     imprimeVetor(A);
+    printf("\n");
 
-    // Ordenando o vetor
-    selectionSort(A);
-
-    // Exibindo o vetor ordenado
-    printf("\nVetor ordenado: ");
-    imprimeVetor(A);
-    printf("\n\n");
+    // Realizando a busca binária
+    int resultado = buscaBinaria(A, 8); // Procurando o valor 8 no vetor
+    if (resultado != -1) {
+        printf("Valor encontrado na posição %d.\n", resultado);
+    } else {
+        printf("Valor não encontrado\n");
+    }
 }
