@@ -1,32 +1,30 @@
-/*Algoritmo Insertion Sort*/
+// ## Bubble Sort ##
 
 #include <stdio.h>
+
+
 #define tam 10
 
-//Subfunção
-//Insertion sort: algoritmo de ordenação de elementos
-void insertionSort (int *A, int len){
-
+// Bubble sort
+void bubbleSort (int A[]){
     int i, j, temp;
-    for (j = 1; j < len; j++){
-        temp = A[j];
-        i = j - 1;
-        
-        while (i >= 0 && A[i] > temp){
-            A[i + 1] = A[i];
-            i--;
+    int n = A[0];
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if(A[j] > A[j + 1]) {
+                temp = A[j];
+                A[j] = A[j + 1];
+                A[j + 1] = temp;
+            }
         }
-        A[i + 1] = temp;
     }
 }
 
-//Subfunção
-//Exibindo o vetor
-void printVetor (int *A, int len){
+// Imprimindo o vetor
+void imprimeVetor (int A[]){
     int i, primeiro = 0;
     printf("[");
-
-    for (i = 0; i < len; i++){
+    for (i = 0; i < tam; i++){
         if (primeiro == 0){
             printf("%d", A[i]);
             primeiro = 1;
@@ -40,21 +38,26 @@ void printVetor (int *A, int len){
 //Função principal
 int main () {
 
-    //Declarações
-    int vetor[tam], i;
+    #if defined(_WIN32) || defined(_WIN64)
+        system("cls");
+    #elif defined(__linux__)
+        system("clear");
+    #endif
 
-    //Entrada de dados
-    for (i = 0; i < tam; i++){
-        printf("\nInforme o %do elemento: ", i+1);
-        scanf("%d", &vetor[i]);
-    }
+    // Declarações
+    int A[tam] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    
+    printf("## Bubble Sort ##\n");
 
-    //Exibindo o vetor desordenado
-    printf("\nVetor inicial: ");
-    printVetor (vetor, tam);
-    //Ordenando o vetor
-    insertionSort (vetor, tam);
+    // Exibindo o vetor desordenado
+    printf("Vetor inicial: ");
+    imprimeVetor(A);
+
+    // Ordenando o vetor
+    bubbleSort(A);
+
+    // Exibindo o vetor ordenado
     printf("\nVetor ordenado: ");
-    //Exibindo o vetor ordenado
-    printVetor (vetor, tam);
+    imprimeVetor(A);
+    printf("\n\n");
 }
