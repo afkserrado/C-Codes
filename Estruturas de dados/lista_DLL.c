@@ -41,7 +41,7 @@ node *init_node (int chave) {
     node *node_novo = malloc(sizeof(node)); // Aloca memória para o primeiro nó
     if (node_novo == NULL) {
         printf("Erro ao alocar memória para o nó.\n");
-        return;
+        return NULL;
     }
     node_novo->chave = chave;
     node_novo->ante = NULL;
@@ -60,7 +60,7 @@ lista_dup *init_lista () {
     lista_dup *lista = malloc(sizeof(lista_dup));
     if (lista == NULL) {
         printf("Erro ao alocar memória para a estrutura da lista.\n");
-        return;
+        return NULL;
     }
     lista->cabeca = NULL;
     lista->cauda = NULL;
