@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Fila circular com vetor
+// Fila circular com vetor com contador
 
 // Estrutura da fila
 typedef struct estFila {
