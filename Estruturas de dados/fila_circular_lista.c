@@ -35,7 +35,7 @@ estFila *init_fila () {
     
     // Falha de alocação de memória
     if (fila == NULL) {
-        printf("Falha ao alocar memória para a estrutura da pilha.\n");
+        printf("Falha ao alocar memória para a estrutura da fila.\n");
         return NULL;
     }
 
@@ -46,6 +46,11 @@ estFila *init_fila () {
 // Enfileirar: inserir elementos na fila
 void enqueue (estFila *fila, node *novo) {
     
+    // Falha de alocação para o nó
+    if (novo == NULL) {
+        return;
+    }
+
     // Fila vazia
     if (fila->fim == NULL) {
         fila->fim = novo;
@@ -104,8 +109,14 @@ void imprimirFila (estFila *fila) {
 
 void liberarFila (estFila *fila) {
     
-    // Fila vazia
+    // Falha de alocação para a fila ou fila inexistente
+    if (fila == NULL) {
+        return;
+    }
+    
+    // Fila existente, mas vazia
     if (fila->fim == NULL) {
+        free(fila);
         return;
     }
 
@@ -121,7 +132,6 @@ void liberarFila (estFila *fila) {
 
     // Libera a estrutura da fila
     free(fila);
-    fila = NULL;
 }
 
 int main() {
@@ -154,4 +164,7 @@ int main() {
     imprimirFila(fila); // Fila vazia
 
     liberarFila(fila); // Liberação de memória
+    fila = NULL;
+
+    return 0;
 }
