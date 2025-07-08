@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <limits.h>
 
 // ##################################################### //
@@ -45,28 +44,43 @@ Mas '*itens' é um ponteiro que aponta para um bloco de memória onde de fato es
 Se o 'tamanho' for 5, então o bloco apontado por 'itens' teria 4 * 5 = 20 bytes, pois são necessários 4 bytes para cada número armazenado na pilha.
 */
 
-bool pilha_cheia (estPilha *pilha) {
-    return pilha->topo == pilha->tamanho - 1; // Retorna true se a pilha estiver cheia
-}
-
-bool pilha_vazia (estPilha *pilha) {
-    return pilha->topo == -1; // Retorna true se o topo for -1 (pilha vazia)
-}
-
 // Insere elementos na pilha
 void push (estPilha *pilha, int item) {
-    if (!pilha_cheia(pilha)) { // Se a pilha não estiver cheia
-        pilha->topo = pilha->topo + 1; // Incrementa o topo, adicionando o item na pilha
-        pilha->itens[pilha->topo] = item; // Insere o item no topo da pilha
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Pilha não existe.\n");
+        return;
     }
-    else {
+    
+    // Pilha cheia
+    if (pilha->topo == pilha->tamanho - 1) {
         printf("Pilha cheia.\n");
+    }
+
+    // Pilha não cheia
+    else {
+        pilha->topo += 1; // Incrementa o topo, adicionando o item na pilha
+        pilha->itens[pilha->topo] = item; // Insere o item no topo da pilha
     }
 }
 
 // Insere elementos ordenadamente na pilha (crescente)
 void push_ordenado (estPilha *pilha, int item) {
-    if (!pilha_cheia(pilha)) { // Se a pilha não estiver cheia
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Pilha não existe.\n");
+        return;
+    }
+    
+    // Pilha cheia
+    if (pilha->topo == pilha->tamanho - 1) {
+        printf("Pilha cheia.\n");
+    }
+    
+    // Pilha não cheia
+    else {
     
         int i = pilha->topo; // Topo inicial
         pilha->topo += 1; // Incrementa o topo
@@ -76,48 +90,105 @@ void push_ordenado (estPilha *pilha, int item) {
             pilha->itens[i + 1] = pilha->itens[i];
             i--;
         }
+
         // Insere o novo item na posição correta
         pilha->itens[i + 1] = item;
-    }
-    else { // Pilha cheia
-        printf("Pilha cheia.\n");
     }
  }
 
 // Remove elementos da pilha
 int pop (estPilha *pilha) {
-    if (!pilha_vazia(pilha)) { // Se a pilha não estiver vazia
-        pilha->topo = pilha->topo - 1; // Decrementa o topo, removendo o item da pilha
-        return pilha->itens[pilha->topo + 1]; // Retorna o elemento removido
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Pilha não existe.\n");
+        return INT_MAX;
     }
-    else {
+    
+    // Pilha vazia
+    if (pilha->topo == -1) {
         printf("Pilha vazia.\n");
         return INT_MAX; // Retorna um valor de erro se a pilha estiver vazia
+    }
+
+    // Pilha não vazia
+    else {
+        pilha->topo -= 1; // Decrementa o topo, removendo o item da pilha
+        return pilha->itens[pilha->topo + 1]; // Retorna o elemento removido
     }
 }
 
 // Retorna o último item inserido na pilha
 int top (estPilha *pilha) {
-    if (!pilha_vazia(pilha)) {
-        return pilha->itens[pilha->topo]; // Retorna o item do topo
-    } 
-    else {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Pilha não existe.\n");
+        return INT_MAX;
+    }
+    
+    // Pilha vazia
+    if (pilha->topo == -1) {
         printf("Pilha vazia.\n");
         return INT_MAX; // Retorna um valor de erro se a pilha estiver vazia
     }
+    
+    // Pilha não vazia
+    else {
+        return pilha->itens[pilha->topo]; // Retorna o item do topo
+    } 
 }
 
 // Retorna a quantidade de itens na pilha
 int size (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Pilha não existe.\n");
+        return INT_MAX;
+    }
+
+    // Pilha vazia
+    if (pilha->topo == -1) {
+        printf("Pilha vazia.\n");
+        return INT_MAX; // Retorna um valor de erro se a pilha estiver vazia
+    }
+    
     return pilha->topo + 1; // topo é um índice de base 0
 }
 
 // Limpa todos os itens da pilha sem destrui-la
 void clear (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Pilha não existe.\n");
+        return;
+    }
+
+    // Pilha vazia
+    if (pilha->topo == -1) {
+        printf("Pilha vazia.\n");
+        return;
+    }
+    
     pilha->topo = -1; // Reseta o topo
 }
 
 void imprimir_pilha (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Pilha não existe.\n");
+        return;
+    }
+
+    // Pilha vazia
+    if (pilha->topo == -1) {
+        printf("Pilha vazia.\n");
+        return;
+    }
+    
     //printf("<< \n");
     for (int i = pilha->topo; i >= 0; i--) {
         if (i == pilha->topo) {
@@ -161,8 +232,22 @@ int main() {
     imprimir_pilha(pilha);
     printf("\nTopo: %d\n", top(pilha));
     printf("Tamanho: %d\n", size(pilha));
+    printf("\n");
+
+    printf("Pops: \n");
+    pop(pilha);
+    imprimir_pilha(pilha);
+    printf("\n");
+
+    pop(pilha);
+    imprimir_pilha(pilha);
+    printf("\n");
+
+    pop(pilha);
+    imprimir_pilha(pilha);
 
     // Libera a memória alocada para a pilha e seus itens
     free(pilha->itens);  // Libera a memória alocada para o array de itens
     free(pilha);  // Libera a memória alocada para a estrutura da pilha
+    pilha = NULL;
 }
