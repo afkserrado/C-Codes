@@ -39,7 +39,7 @@ typedef struct ldll {
 
 // Cria e inicializa um novo nó, configurando seus ponteiros para NULL
 node *init_node (int chave) {
-    node *novo = malloc(sizeof(node)); // Aloca memória para o nó
+    node *novo = (node*)malloc(sizeof(node)); // Aloca memória para o nó
     
     // Falha de alocação
     if (novo == NULL) {
@@ -62,7 +62,7 @@ Obs. 2: a função init_node retorna um ponteiro para node, que aponta para a me
 
 // Cria e inicializa uma nova lista, configurando seus ponteiros para NULL (lista vazia)
 ldll *init_lista () {
-    ldll *lista = malloc(sizeof(ldll));
+    ldll *lista = (ldll*)malloc(sizeof(ldll));
     
     // Falha de alocação    
     if (lista == NULL) {

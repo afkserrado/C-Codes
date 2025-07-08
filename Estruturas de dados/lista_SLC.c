@@ -18,7 +18,7 @@ typedef struct lslc {
 
 // Cria e inicializa um novo nó na lista, configurando seus ponteiros para NULL
 node *init_node (int chave) {
-    node *novo = malloc(sizeof(node)); // Aloca memória para o nó
+    node *novo = (node*)malloc(sizeof(node)); // Aloca memória para o nó
     
     // Falha de alocação
     if (novo == NULL) {
@@ -33,7 +33,7 @@ node *init_node (int chave) {
 
 // Cria e inicializa a lista, configurando seus ponteiros para NULL (lista vazia)
 lslc *init_lista () {
-    lslc *lista = malloc(sizeof(lslc)); // Aloca memória para a lista
+    lslc *lista = (lslc*)malloc(sizeof(lslc)); // Aloca memória para a lista
 
     // Falha de alocação    
     if (lista == NULL) {
