@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Lista duplamente ligada linear
+// ##################################################### //
+// LISTA DUPLAMENTE LIGADA LINEAR (LDLL)
 
 // Define a estrutura de um nó da lista
 typedef struct node {
