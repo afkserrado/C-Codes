@@ -38,7 +38,7 @@ typedef struct ldll {
 
 // Cria e inicializa um novo nó, configurando seus ponteiros para NULL
 node *init_node (int chave) {
-    node *novo = malloc(sizeof(node)); // Aloca memória para o primeiro nó
+    node *novo = malloc(sizeof(node)); // Aloca memória para o nó
     
     // Falha de alocação
     if (novo == NULL) {
@@ -80,12 +80,12 @@ void inserir_node (ldll *lista, node *novo) {
     
     // Falha de alocação
     if (lista == NULL) {
-        printf("Memória não alocada para a lista.\n;");
+        printf("Memória não alocada para a lista.\n");
         return;
     }
 
     if (novo == NULL) {
-        printf("Memória não alocada para o nó..\n;");
+        printf("Memória não alocada para o nó.\n");
         return;
     }    
     
@@ -114,12 +114,12 @@ void inserir_node_ordenado (ldll *lista, node *novo) {
     
     // Falha de alocação
     if (lista == NULL) {
-        printf("Memória não alocada para a lista.\n;");
+        printf("Memória não alocada para a lista.\n");
         return;
     }
 
     if (novo == NULL) {
-        printf("Memória não alocada para o nó..\n;");
+        printf("Memória não alocada para o nó.\n");
         return;
     }   
 
@@ -172,7 +172,7 @@ void remover_node (ldll *lista, int chave) {
     
     // Falha de alocação
     if (lista == NULL) {
-        printf("Memória não alocada para a lista.\n;");
+        printf("Memória não alocada para a lista.\n");
         return;
     }
     
@@ -208,7 +208,7 @@ void remover_node (ldll *lista, int chave) {
         }
 
         // A chave buscada é a cauda da lista
-        if (x == lista->cauda) {
+        else if (x == lista->cauda) {
             lista->cauda = x->ante;
             lista->cauda->prox = NULL;
         }
@@ -225,6 +225,19 @@ void remover_node (ldll *lista, int chave) {
 
 // Imprime a lista
 void imprimir_lista (ldll *lista) {
+    
+    // Falha de alocação
+    if (lista == NULL) {
+        printf("Memória não alocada para a lista.\n");
+        return;
+    }
+    
+    // Lista vazia
+    if (lista->cabeca == NULL) { 
+        printf("A lista está vazia.\n");
+        return;
+    }
+    
     node *x = lista->cabeca; // Inicializa x com a "cabeca" da lista
     printf("\n(NULL)"); // Início da lista
     while (x != NULL) {
@@ -236,12 +249,20 @@ void imprimir_lista (ldll *lista) {
 
 // Função para liberar a lista e seus nós
 void liberar_lista(ldll *lista) {
+    
+    // Falha de alocação
+    if (lista == NULL) {
+        printf("Memória não alocada para a lista.\n");
+        return;
+    }
+    
     node *x = lista->cabeca;
     while (x != NULL) {
         node *temp = x;
         x = x->prox;
         free(temp); // Libera a memória de cada nó
     }
+
     free(lista); // Libera a memória da lista
 }
 
@@ -294,4 +315,5 @@ int main(){
 
     // Libera a memória alocada para todos os nós e para a lista
     liberar_lista(lista);
+    lista = NULL;
 }
