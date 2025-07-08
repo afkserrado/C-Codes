@@ -22,6 +22,7 @@ void init_pilha (estPilha *pilha, int tamanho) {
         return;
     }
 
+    // Inicializações
     pilha->tamanho = tamanho; // Define o tamanho máximo da pilha
     pilha->topo = -1; // Inicializa o topo como -1 (pilha vazia)
 }

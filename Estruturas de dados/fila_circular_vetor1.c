@@ -15,6 +15,14 @@ typedef struct estFila {
 // Inicializa a fila
 void init_fila (estFila *fila, int tam) {
     fila->itens = (int *)malloc(tam * sizeof(int));
+    
+    // Falha de alocação
+    if (fila->itens == NULL) {
+        printf("Erro ao alocar memória para os itens da fila.\n");
+        return;
+    }
+    
+    // Inicializações
     fila->tam = tam;
     fila->ini = 0;
     fila->fim = 0;
@@ -22,13 +30,21 @@ void init_fila (estFila *fila, int tam) {
 
 // Enfileirar: inserir elementos na fila
 void enqueue (estFila *fila, int novo) {
-    // Verifica se a fila está cheia
+    
+    // Falha de alocação
+    if (fila == NULL) {
+        printf("Fila não existe.\n");
+        return;
+    }
+    
+    // Fila cheia
     // Início = Fim + 1
     if (fila->ini == (fila->fim + 1) % fila->tam) {
         printf("Fila cheia.\n");
         return;
     }
 
+    // Fila não cheia
     fila->itens[fila->fim] = novo;
 
     // Incrementa o fim, resentando após inserir no último índice, mantendo a circularidade
@@ -48,7 +64,14 @@ void enqueue (estFila *fila, int novo) {
 
 // Desinfileirar: retirar elementos da fila
 void dequeue (estFila *fila) {
-    // Verifica se a fila está vazia
+    
+    // Falha de alocação
+    if (fila == NULL) {
+        printf("Fila não existe.\n");
+        return;
+    }
+    
+    // Fila vazia
     // Início = Fim
     if (fila->ini == fila->fim) {
         printf("Fila vazia.\n");
@@ -60,6 +83,14 @@ void dequeue (estFila *fila) {
 }
 
 void imprimirFila (estFila *fila) {
+    
+    // Falha de alocação
+    if (fila == NULL) {
+        printf("Fila não existe.\n");
+        return;
+    }
+    
+    // Pilha vazia
     if (fila->ini == fila->fim) {
         printf("Fila vazia.\n");
     }
@@ -76,7 +107,7 @@ void imprimirFila (estFila *fila) {
 int main() {
 
     // Aloca memória para a fila
-    estFila *fila = (estFila *)malloc(sizeof(estFila));
+    estFila *fila = (estFila*)malloc(sizeof(estFila));
 
     // Inicializa a fila
     init_fila(fila, 4);
