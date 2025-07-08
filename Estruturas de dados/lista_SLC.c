@@ -182,7 +182,7 @@ void limpar_lista (lslc *lista) {
 
 // Liberar a memória alocada para os nós e a lista
 void liberar_lista(lslc *lista) {
-    // Lista vazia
+    // Lista não existe
     if (lista == NULL) { 
         printf("Não há lista para liberar.\n");
         return;
