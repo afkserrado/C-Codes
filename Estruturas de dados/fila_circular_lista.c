@@ -17,7 +17,7 @@ typedef struct estFila {
 
 // Cria e inicializa um novo nó, configurando seus ponteiros para NULL
 node *init_node (int chave) {
-    node *novo = malloc(sizeof(node)); // Aloca memória para o nó
+    node *novo = (node*)malloc(sizeof(node)); // Aloca memória para o nó
 
     // Falha de alocação de memória
     if (novo == NULL) {
@@ -32,7 +32,7 @@ node *init_node (int chave) {
 
 // Cria e inicializa uma fila
 estFila *init_fila () {
-    estFila *fila = malloc(sizeof(estFila)); // Aloca memória para a fila
+    estFila *fila = (estFila*)(sizeof(estFila)); // Aloca memória para a fila
 
     // Falha de alocação de memória
     if (fila == NULL) {

@@ -14,7 +14,7 @@ typedef struct estFila {
 
 // Inicializa a fila
 void init_fila (estFila *fila, int tam) {
-    fila->itens = (int *)malloc(tam * sizeof(int));
+    fila->itens = (int*)malloc(tam * sizeof(int));
     fila->tam = tam;
     fila->qtd = 0;
     fila->cabeca = 0;
@@ -59,7 +59,7 @@ void imprimirFila (estFila *fila) {
 int main() {
 
     // Aloca memória para a fila
-    estFila *fila = (estFila *)malloc(sizeof(estFila));
+    estFila *fila = (estFila*)malloc(sizeof(estFila));
 
     // Inicializa a fila
     init_fila(fila, 3);

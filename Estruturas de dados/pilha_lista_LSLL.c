@@ -19,7 +19,7 @@ typedef struct estPilha {
 
 // Cria e inicializa um novo nó, configurando seus ponteiros para NULL
 node *init_node (int chave) {
-    node *novo = malloc(sizeof(node)); // Aloca memória para o nó
+    node *novo = (node*)malloc(sizeof(node)); // Aloca memória para o nó
     
     // Falha de alocação
     if (novo == NULL) {
@@ -34,7 +34,7 @@ node *init_node (int chave) {
 
 // Cria e inicializa uma pilha
 estPilha *init_pilha () {
-    estPilha *pilha = malloc(sizeof(estPilha)); // Aloca memória para a estrutura da pilha
+    estPilha *pilha = (estPilha*)malloc(sizeof(estPilha)); // Aloca memória para a estrutura da pilha
     
     // Falha de alocação    
     if (pilha == NULL) {

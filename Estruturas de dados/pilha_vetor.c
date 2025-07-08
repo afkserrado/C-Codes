@@ -201,7 +201,7 @@ void imprimir_pilha (estPilha *pilha) {
 }
 
 int main() {
-    estPilha *pilha = malloc(sizeof(estPilha));
+    estPilha *pilha = (estPilha*)malloc(sizeof(estPilha));
 
     /*
     'malloc' separa um espaço dentro da memória para armazenar a pilha e retorna o endereço desse espaço para a variável 'pilha'.

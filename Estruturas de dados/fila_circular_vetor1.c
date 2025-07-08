@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Fila circular com vetor sem contador
+// ##################################################### //
+// FILA CIRCULAR COM VETOR SEM CONTADOR (FCV)
 
 // Estrutura da fila
 typedef struct estFila {
