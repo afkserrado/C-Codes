@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Lista duplamente encadeada linear
+// Lista duplamente ligada linear
 
 // Define a estrutura de um nó da lista
 typedef struct node {
@@ -31,151 +31,200 @@ Obs. 2: os bytes de padding não são utilizados para armazenar dados, apenas pa
 */
 
 // Define a estrutura de uma lista duplamente encadeada
-typedef struct lista_dup {
+typedef struct ldll {
     node *cabeca;
     node *cauda;
-} lista_dup;
+} ldll;
 
 // Cria e inicializa um novo nó, configurando seus ponteiros para NULL
 node *init_node (int chave) {
-    node *node_novo = malloc(sizeof(node)); // Aloca memória para o primeiro nó
-    if (node_novo == NULL) {
+    node *novo = malloc(sizeof(node)); // Aloca memória para o primeiro nó
+    
+    // Falha de alocação
+    if (novo == NULL) {
         printf("Erro ao alocar memória para o nó.\n");
         return NULL;
     }
-    node_novo->chave = chave;
-    node_novo->ante = NULL;
-    node_novo->prox = NULL;
-    return node_novo;
+
+    // Inicialização
+    novo->chave = chave;
+    novo->ante = NULL;
+    novo->prox = NULL;
+    return novo;
 }
 
 /*
-Obs. 1: a variável node_novo é um ponteiro para uma estrutura node, que contém dados de tipos diferentes (neste caso, um int e dois ponteiros). A alocação de memória com malloc garante espaço suficiente para armazenar todos os campos dessa estrutura.
+Obs. 1: a variável novo é um ponteiro para uma estrutura node, que contém dados de tipos diferentes (neste caso, um int e dois ponteiros). A alocação de memória com malloc garante espaço suficiente para armazenar todos os campos dessa estrutura.
 
 Obs. 2: a função init_node retorna um ponteiro para node, que aponta para a memória alocada para o nó recém-criado.
 */
 
 // Cria e inicializa uma nova lista, configurando seus ponteiros para NULL (lista vazia)
-lista_dup *init_lista () {
-    lista_dup *lista = malloc(sizeof(lista_dup));
+ldll *init_lista () {
+    ldll *lista = malloc(sizeof(ldll));
+    
+    // Falha de alocação    
     if (lista == NULL) {
         printf("Erro ao alocar memória para a estrutura da lista.\n");
         return NULL;
     }
+
+    // Inicialização
     lista->cabeca = NULL;
     lista->cauda = NULL;
     return lista;
 }
 
 // Insere um novo nó no início da lista
-void inserir_node (lista_dup *lista, node *node_novo) {
-    if (lista->cabeca == NULL) { // Lista vazia
-        lista->cabeca = node_novo; // Insere o novo nó na cabeça da lista
-        lista->cauda = node_novo;
+void inserir_node (ldll *lista, node *novo) {
+    
+    // Falha de alocação
+    if (lista == NULL) {
+        printf("Memória não alocada para a lista.\n;");
+        return;
+    }
+
+    if (novo == NULL) {
+        printf("Memória não alocada para o nó..\n;");
+        return;
+    }    
+    
+    // Lista vazia
+    if (lista->cabeca == NULL) { 
+        lista->cabeca = novo; // Insere o novo nó na cabeça da lista
+        lista->cauda = novo; // Insere o novo nó na cauda da lista
     }
     /*
-    Obs. 1: "node_novo->ante" e "node_novo->prox" já apontam para NULL, porque isso foi definido no momento da inicialização do node_novo com init_node.
+    Obs. 1: "novo->ante" e "novo->prox" já apontam para NULL, porque isso foi definido no momento da inicialização do novo com init_node.
     
-    Obs. 2: ao fazer "lista->cauda = node_novo" garantimos que "lista->cauda" sempre seja o último elemento da lista, pois a inserção está ocorrendo sempre na cabeça.
+    Obs. 2: ao fazer "lista->cauda = novo" garantimos que "lista->cauda" sempre seja o último elemento da lista, pois a inserção está ocorrendo sempre na cabeça.
     */ 
 
-    else { // Lista não vazia  
+    // Lista não vazia 
+    else {  
         // Insere o novo nó no início da lista
-        node_novo->prox = lista->cabeca; // "prox" do novo nó aponta para o atual "cabeca"
-        lista->cabeca->ante = node_novo; // "ante" do atual "cabeca" aponta para o novo nó
-        lista->cabeca = node_novo; //  "cabeca" recebe o novo nó
+        novo->prox = lista->cabeca; // "prox" do novo nó aponta para o atual "cabeca"
+        lista->cabeca->ante = novo; // "ante" do atual "cabeca" aponta para o novo nó
+        lista->cabeca = novo; //  "cabeca" recebe o novo nó
     }
 }
 
 // Insere um novo nó na posição ordenada
-void inserir_node_ordenado (lista_dup *lista, node *node_novo) {
-    if (lista->cabeca == NULL) { // Lista vazia
-        lista->cabeca = node_novo;
-        lista->cauda = node_novo;
+void inserir_node_ordenado (ldll *lista, node *novo) {
+    
+    // Falha de alocação
+    if (lista == NULL) {
+        printf("Memória não alocada para a lista.\n;");
+        return;
     }
-    else { // Lista não vazia
+
+    if (novo == NULL) {
+        printf("Memória não alocada para o nó..\n;");
+        return;
+    }   
+
+    // Lista vazia
+    if (lista->cabeca == NULL) { 
+        lista->cabeca = novo;
+        lista->cauda = novo;
+    }
+
+    // Lista não vazia
+    else { 
         
         // Variáveis temporárias
         node *x = lista->cabeca;
-        int chave = node_novo->chave;
+        int chave = novo->chave;
 
-        while (x != NULL && x->chave < chave) {
+        while (x != NULL && chave > x->chave) {
             x = x->prox;
         }
         /*
         Quando o while é interrompido, 'x' guarda a posição do elemento imediatamente após à posição na qual a chave deve ser inserida. Por exemplo, se a lista contém 5, 7 e 9, 'x' possuíra o endereço de 9.
         */
 
-        // Caso 1: o node_novo é o primeiro item da lista
+        // Caso 1: o novo é o primeiro item da lista
         if (x == lista->cabeca) {
-            node_novo->prox = lista->cabeca;
-            node_novo->ante = NULL;
-            lista->cabeca->ante = node_novo;
-            lista->cabeca = node_novo;
+            novo->prox = lista->cabeca;
+            novo->ante = NULL;
+            lista->cabeca->ante = novo;
+            lista->cabeca = novo;
         }
-        // Caso 2: o node_novo é o último item da lista
+        // Caso 2: o novo é o último item da lista
         else if (x == NULL) {
-            node_novo->prox = NULL;
-            node_novo->ante = lista->cauda;
-            lista->cauda->prox = node_novo;
-            lista->cauda = node_novo;
+            novo->prox = NULL;
+            novo->ante = lista->cauda;
+            lista->cauda->prox = novo;
+            lista->cauda = novo;
         }
-        // Caso 3: o node_novo ocupa qualquer posição intermediária da lista
+        // Caso 3: o novo ocupa qualquer posição intermediária da lista
         else {
-            node_novo->ante = x->ante;
-            node_novo->prox = x;
-            x->ante->prox = node_novo;
-            x->ante = node_novo;      
+            novo->ante = x->ante;
+            novo->prox = x;
+            x->ante->prox = novo;
+            x->ante = novo;      
         }
     }
 }
 
 // Remover um nó qualquer da lista
-void remover_node (lista_dup *lista, int chave) {
+void remover_node (ldll *lista, int chave) {
     
-    if (lista->cabeca == NULL) { // Lista vazia
+    // Falha de alocação
+    if (lista == NULL) {
+        printf("Memória não alocada para a lista.\n;");
+        return;
+    }
+    
+    // Lista vazia
+    if (lista->cabeca == NULL) { 
         return;
     }
     
     node *x = lista->cabeca;
 
-    /*
-    É o mesmo que fazer:
-    node *x;
-    x = lista->cabeca
-    */
-
-    while (x != NULL && x->chave != chave) { // Procurando a chave na lista
+    // Procurando a chave a ser excluída
+    while (x != NULL && x->chave != chave) { 
         x = x->prox;
     }
 
-    if (x != NULL) { // Se a chave for encontrada
-        if (x == lista->cabeca) { // Se for o primeiro nó
-            if (x->prox == NULL) { // Se a lista só possuir um nó
+    // Chave encontrada
+    if (x != NULL) {
+        
+        // A chave buscada é a cabeça da lista
+        if (x == lista->cabeca) {
+            
+            // Lista unitária
+            if (x->prox == NULL) {
                 lista->cabeca = NULL;
                 lista->cauda = NULL;
             }
-            else { // Se a lista possuir mais de um nó
+
+            // Lista com múltiplos elementos
+            else {
                 lista->cabeca = x->prox;
                 lista->cabeca->ante = NULL;
             }
         }
-        else { // Se não for o primeiro nó
-            if (x == lista->cauda) { // Se for o último nó
-                lista->cauda = x->ante;
-                lista->cauda->prox = NULL;
-            }
-            else { // Elemento intermediário
-                x->ante->prox = x->prox; // O "ante" do atual aponta para o "prox" do atual
-                x->prox->ante = x->ante; // O "prox" do atual aponta para o "ante" do atual
-            }
+
+        // A chave buscada é a cauda da lista
+        if (x == lista->cauda) {
+            lista->cauda = x->ante;
+            lista->cauda->prox = NULL;
         }
+
+        // A chave buscada é um elemento intermediário
+        else {
+            x->ante->prox = x->prox; // O "ante" do atual aponta para o "prox" do atual
+            x->prox->ante = x->ante; // O "prox" do atual aponta para o "ante" do atual
+        }
+
         free(x);
     }
 }
 
 // Imprime a lista
-void imprimir_lista (lista_dup *lista) {
+void imprimir_lista (ldll *lista) {
     node *x = lista->cabeca; // Inicializa x com a "cabeca" da lista
     printf("\n(NULL)"); // Início da lista
     while (x != NULL) {
@@ -185,8 +234,8 @@ void imprimir_lista (lista_dup *lista) {
     printf(" (NULL)\n\n"); // Fim da lista
 }
 
-// Função para liberar todos os nós da lista
-void liberar_lista(lista_dup *lista) {
+// Função para liberar a lista e seus nós
+void liberar_lista(ldll *lista) {
     node *x = lista->cabeca;
     while (x != NULL) {
         node *temp = x;
@@ -197,52 +246,52 @@ void liberar_lista(lista_dup *lista) {
 }
 
 int main(){
-    lista_dup *idades = init_lista();
+    ldll *lista = init_lista();
 
     /*
-    inserir_node(idades, init_node(20));
-    inserir_node(idades, init_node(37));
-    inserir_node(idades, init_node(18));
-    inserir_node(idades, init_node(40));
-    inserir_node(idades, init_node(18));
-    inserir_node(idades, init_node(-1));
+    inserir_node(lista, init_node(20));
+    inserir_node(lista, init_node(37));
+    inserir_node(lista, init_node(18));
+    inserir_node(lista, init_node(40));
+    inserir_node(lista, init_node(18));
+    inserir_node(lista, init_node(-1));
 
-    imprimir_lista(idades);
-    remover_node(idades, -1);
+    imprimir_lista(lista);
+    remover_node(lista, -1);
     printf("Depois\n");
-    imprimir_lista(idades);
-    remover_node(idades, 40);
+    imprimir_lista(lista);
+    remover_node(lista, 40);
     printf("Depois\n");
-    imprimir_lista(idades);
-    remover_node(idades, 20);
+    imprimir_lista(lista);
+    remover_node(lista, 20);
     printf("Depois\n");
-    imprimir_lista(idades);
-    remover_node(idades, 100);
+    imprimir_lista(lista);
+    remover_node(lista, 100);
     printf("Depois\n");
-    imprimir_lista(idades);
+    imprimir_lista(lista);
     */
 
-    inserir_node_ordenado(idades, init_node(20));
-    inserir_node_ordenado(idades, init_node(37));
-    inserir_node_ordenado(idades, init_node(18));
-    inserir_node_ordenado(idades, init_node(40));
-    inserir_node_ordenado(idades, init_node(18));
-    inserir_node_ordenado(idades, init_node(-1));
+    inserir_node_ordenado(lista, init_node(20));
+    inserir_node_ordenado(lista, init_node(37));
+    inserir_node_ordenado(lista, init_node(18));
+    inserir_node_ordenado(lista, init_node(40));
+    inserir_node_ordenado(lista, init_node(18));
+    inserir_node_ordenado(lista, init_node(-1));
 
-    imprimir_lista(idades);
-    remover_node(idades, -1);
+    imprimir_lista(lista);
+    remover_node(lista, -1);
     printf("Depois\n");
-    imprimir_lista(idades);
-    remover_node(idades, 40);
+    imprimir_lista(lista);
+    remover_node(lista, 40);
     printf("Depois\n");
-    imprimir_lista(idades);
-    remover_node(idades, 20);
+    imprimir_lista(lista);
+    remover_node(lista, 20);
     printf("Depois\n");
-    imprimir_lista(idades);
-    remover_node(idades, 100);
+    imprimir_lista(lista);
+    remover_node(lista, 100);
     printf("Depois\n");
-    imprimir_lista(idades);
+    imprimir_lista(lista);
 
     // Libera a memória alocada para todos os nós e para a lista
-    liberar_lista(idades);
+    liberar_lista(lista);
 }
