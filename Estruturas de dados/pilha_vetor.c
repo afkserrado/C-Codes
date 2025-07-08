@@ -3,7 +3,7 @@
 #include <limits.h>
 
 // ##################################################### //
-// PILHA COM VETOR
+// PILHA COM VETOR (PV)
 
 // Cria a estrutura de uma pilha
 typedef struct estPilha {

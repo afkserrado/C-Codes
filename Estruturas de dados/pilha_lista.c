@@ -3,7 +3,8 @@
 #include <stdbool.h>
 #include <limits.h>
 
-// Pilha com lista simplesmente encadeada
+// ##################################################### //
+// PILHA COM LISTA SIMPLESMENTE LIGADA LINEAR (PLSLL)
 
 // Define a estrutura de um nó da lista
 typedef struct node {
@@ -12,53 +13,74 @@ typedef struct node {
 } node;
 
 // Cria a estrutura de uma pilha baseada em lista
-typedef struct pilha {
+typedef struct estPilha {
     node *topo; 
-} pilha;
+} estPilha;
 
 // Cria e inicializa um novo nó, configurando seus ponteiros para NULL
 node *init_node (int chave) {
-    node *nNode = malloc(sizeof(node)); // Aloca memória para o nó
-    if (nNode == NULL) { // Memória não alocada
+    node *novo = malloc(sizeof(node)); // Aloca memória para o nó
+    
+    // Falha de alocação
+    if (novo == NULL) {
         printf("Erro ao alocar memória para o nó.\n");
         return NULL;
     }
-    nNode->chave = chave;
-    nNode->prox = NULL;
-    return nNode;
+
+    novo->chave = chave;
+    novo->prox = NULL;
+    return novo;
 }
 
 // Cria e inicializa uma pilha
-pilha *init_pilha () {
-    pilha *nPilha = malloc(sizeof(pilha)); // Aloca memória para a estrutura da pilha
-    if (nPilha == NULL) { // Memória não alocada
-        printf("Falha ao alocar memória para a estrutura da pilha.\n");
+estPilha *init_pilha () {
+    estPilha *pilha = malloc(sizeof(estPilha)); // Aloca memória para a estrutura da pilha
+    
+    // Falha de alocação    
+    if (pilha == NULL) {
+        printf("Erro ao alocar memória para a estrutura da pilha.\n");
         return NULL;
     }
-    nPilha->topo = NULL;
-    return nPilha;
+
+    pilha->topo = NULL;
+    return pilha;
 }
 
 // Insere elementos no topo da pilha (início da lista)
-void push (pilha *nPilha, node *nNode) {
-    if (nPilha == NULL || nNode == NULL) { // Memória não alocada
-        printf("Não é possível fazer o push.\n");
+void push (estPilha *pilha, node *novo) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Memória não alocada para a pilha.\n");
         return;
     }
 
-    nNode->prox = nPilha->topo;
-    nPilha->topo = nNode;  
+    if (novo == NULL) {
+        printf("Memória não alocada para o nó.\n");
+        return;
+    }  
+
+    novo->prox = pilha->topo;
+    pilha->topo = novo;  
 }
 
 // Remove elementos do topo da pilha (início da lista)
-int pop (pilha *nPilha) {
-    if (nPilha->topo == NULL) {
+int pop (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Memória não alocada para a pilha.\n");
+        return INT_MAX;
+    }
+
+    // Pilha vazia
+    if (pilha->topo == NULL) {
         printf("Pilha vazia.\n");
         return INT_MAX;
     }
 
-    node *temp = nPilha->topo;
-    nPilha->topo = temp->prox;
+    node *temp = pilha->topo;
+    pilha->topo = temp->prox;
     int valor = temp->chave; // Armazena a chave para retorno
     
     free(temp);
@@ -66,10 +88,20 @@ int pop (pilha *nPilha) {
 }
 
 // Retorna o último item inserido na pilha
-int top (pilha *nPilha) {
-    if (nPilha->topo != NULL) {
-        return nPilha->topo->chave; // Retorna o item do topo
+int top (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Memória não alocada para a pilha.\n");
+        return INT_MAX;
+    }
+    
+    // Pilha não vazia
+    if (pilha->topo != NULL) {
+        return pilha->topo->chave; // Retorna o item do topo
     } 
+
+    // Pilha vazia
     else {
         printf("Pilha vazia.\n");
         return INT_MAX; // Retorna um valor de erro se a pilha estiver vazia
@@ -77,20 +109,45 @@ int top (pilha *nPilha) {
 }
 
 // Limpa todos os itens da pilha sem destrui-la
-void clear (pilha *nPilha) {
-    node *x = nPilha->topo; // Inicializa no topo da pilha
-    // Imprime os demais elementos
+void clear (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Memória não alocada para a pilha.\n");
+        return;
+    }
+
+    // Pilha vazia
+    if (pilha->topo == NULL) {
+        printf("Pilha vazia.\n");
+        return;
+    }
+    
+    node *x = pilha->topo; // Inicializa no topo da pilha
     while (x != NULL) {
         node *temp = x;
         x = x->prox; // Avança
         free(temp); // Libera memória do nó
     }
-    nPilha->topo = NULL;
+    pilha->topo = NULL;
 }
 
 // Imprime a pilha
-void imprimir_pilha (pilha *nPilha) {
-    node *x = nPilha->topo; // Inicializa no topo da pilha
+void imprimir_pilha (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Memória não alocada para a pilha.\n");
+        return;
+    }
+
+    // Pilha vazia
+    if (pilha->topo == NULL) {
+        printf("Pilha vazia.\n");
+        return;
+    }
+    
+    node *x = pilha->topo; // Inicializa no topo da pilha
     
     // Imprime o topo
     if (x != NULL) { // Se a pilha não estiver vazia
@@ -106,30 +163,39 @@ void imprimir_pilha (pilha *nPilha) {
 }
 
 // Libera a memória alocada para os nós e a estrutura da pilha
-void libera_pilha (pilha *nPilha) {
-    node *x = nPilha->topo; // Inicializa no topo da pilha
+void libera_pilha (estPilha *pilha) {
+    
+    // Falha de alocação
+    if (pilha == NULL) {
+        printf("Memória não alocada para a pilha.\n");
+        return;
+    }
+
+    node *x = pilha->topo; // Inicializa no topo da pilha
+
     // Libera os elementos da pilha
     while (x != NULL) {
         node *temp = x;
         x = x->prox; // Avança
         free(temp); // Libera memória do nó
     }
-    free(nPilha); // Libera memória alocada para a estrutura da pilha
+    
+    free(pilha); // Libera memória alocada para a estrutura da pilha
 }
 
 int main() {
-    pilha *nPilha = init_pilha();
+    estPilha *pilha = init_pilha();
 
     // Push
-    push(nPilha, init_node(10));
-    push(nPilha, init_node(5));
-    push(nPilha, init_node(15));
-    imprimir_pilha(nPilha);
-    printf("\nTopo: %d\n", top(nPilha));
-    clear(nPilha);
-    imprimir_pilha(nPilha);
+    push(pilha, init_node(10));
+    push(pilha, init_node(5));
+    push(pilha, init_node(15));
+    imprimir_pilha(pilha);
+    printf("\nTopo: %d\n", top(pilha));
+    clear(pilha);
+    imprimir_pilha(pilha);
     printf("\n");
 
     // Libera a memória alocada para a pilha e seus itens
-    libera_pilha(nPilha);
+    libera_pilha(pilha);
 }
