@@ -83,28 +83,6 @@ void dequeue (estFila *fila) {
     fila->ini = (fila->ini + 1) % fila->tam; 
 }
 
-void imprimirFila (estFila *fila) {
-    
-    // Falha de alocação
-    if (fila == NULL) {
-        printf("Fila não existe.\n");
-        return;
-    }
-    
-    // Pilha vazia
-    if (fila->ini == fila->fim) {
-        printf("Fila vazia.\n");
-    }
-    
-    int i = fila->ini;
-    while (i != fila->fim) {
-        if (i != fila->ini) {printf(" ");}
-        printf("%d", fila->itens[i]);
-        i = (i + 1) % fila->tam; // Mantém a circularidade
-    }    
-    printf("\n");
-}
-
 // Desinfileirar: retirar um valor buscado da fila
 int dequeueValor (estFila *fila, int valor) {
     
@@ -172,6 +150,28 @@ void busca (estFila *fila, int valor) {
 
     // Valor não encontrado
     printf("Valor %d não encontrado na fila.\n", valor);
+}
+
+void imprimirFila (estFila *fila) {
+    
+    // Falha de alocação
+    if (fila == NULL) {
+        printf("Fila não existe.\n");
+        return;
+    }
+    
+    // Pilha vazia
+    if (fila->ini == fila->fim) {
+        printf("Fila vazia.\n");
+    }
+    
+    int i = fila->ini;
+    while (i != fila->fim) {
+        if (i != fila->ini) {printf(" ");}
+        printf("%d", fila->itens[i]);
+        i = (i + 1) % fila->tam; // Mantém a circularidade
+    }    
+    printf("\n");
 }
 
 int main() {
