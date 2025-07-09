@@ -116,6 +116,12 @@ int dequeueValor (estFila *fila, int valor) {
             // Atualiza fim
             fila->fim = (fila->fim - 1 + fila->tam) % fila->tam;  // Mantém a circularidade
             
+            /*
+            Ou:
+            // Decrementa o fim, mantendo a circularidade
+            fila->fim = (fila->fim == 0) ? fila->tam - 1 : fila->fim - 1;
+            */
+
             printf("O %d foi excluído.\n", valor);
             break;
         }
