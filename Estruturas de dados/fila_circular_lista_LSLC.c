@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Fila circular com lista simplesmente ligada circular
+// ##################################################### //
+// FILA CIRCULAR COM LISTA SIMPLESMENTE LIGADA CIRCULAR (FLSLC)
 
 // Define a estrutura de um nó lista
 typedef struct node {
@@ -32,7 +33,7 @@ node *init_node (int chave) {
 
 // Cria e inicializa uma fila
 estFila *init_fila () {
-    estFila *fila = (estFila*)(sizeof(estFila)); // Aloca memória para a fila
+    estFila *fila = (estFila*)malloc(sizeof(estFila)); // Aloca memória para a fila
 
     // Falha de alocação de memória
     if (fila == NULL) {
