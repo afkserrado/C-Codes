@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 // ##################################################### //
 // FILA CIRCULAR COM VETOR SEM CONTADOR (FCV)
@@ -9,7 +10,7 @@ typedef struct estFila {
     int *itens; // Ponteiro para o array de elementos da fila
     int tam; // Quantidade máxima de elementos da fila
     int ini; // Índice do início da fila
-    int fim; // Índice do final da fila
+    int fim; // Índice da próxima posição livre, não do último elemento
 } estFila;
 
 // Inicializa a fila
@@ -104,6 +105,75 @@ void imprimirFila (estFila *fila) {
     printf("\n");
 }
 
+// Desinfileirar: retirar um valor buscado da fila
+int dequeueValor (estFila *fila, int valor) {
+    
+    // Falha de alocação
+    if (fila == NULL) {
+        printf("Fila não existe.\n");
+        return INT_MAX;
+    }
+    
+    // Fila vazia
+    // Início = Fim
+    if (fila->ini == fila->fim) {
+        printf("Fila vazia.\n");
+        return INT_MAX;
+    }
+
+    // Buscar o valor na fila
+    int i = fila->ini;
+    int encontrado = 0;
+    do {
+        // Valor encontrado
+        if (fila->itens[i] == valor) {
+            encontrado = 1;
+            
+            // Shift
+            // Loop até o fim (posição livre)
+            for (int j = i; j != fila->fim; j = (j + 1) % fila->tam) {
+                fila->itens[j] = fila->itens[(j + 1) % fila->tam];
+            }
+
+            // Atualiza fim
+            fila->fim = (fila->fim - 1 + fila->tam) % fila->tam;  // Mantém a circularidade
+            
+            printf("O %d foi excluído.\n", valor);
+            break;
+        }
+        i = (i + 1) % fila->tam; // Incrementa, mantendo a circularidade
+    } while (i != fila->fim); // Loop até o fim (posição livre)
+
+    if (encontrado == 0) {
+        printf("Valor não encontrado.\n");
+        return INT_MAX;
+    }
+    return valor;
+}
+
+// Busca um valor na fila
+void busca (estFila *fila, int valor) {
+    
+    // Fila vazia
+    // Início = Fim
+    if (fila->ini == fila->fim) {
+        printf("Fila vazia.\n");
+        return;
+    }
+    
+    int i = fila->ini;
+    do {
+        if (fila->itens[i] == valor) {
+            printf("Valor %d\n", fila->itens[i]);
+            return;
+        }
+        i = (i + 1) % fila->tam;
+    } while (i != fila->fim); // O fim aponta para a próxima posição livre
+
+    // Valor não encontrado
+    printf("Valor %d não encontrado na fila.\n", valor);
+}
+
 int main() {
 
     // Aloca memória para a fila
@@ -131,6 +201,14 @@ int main() {
     dequeue(fila);
     dequeue(fila);
     imprimirFila(fila); // Fila vazia
+
+    enqueue(fila, 10);
+    enqueue(fila, 20);
+    enqueue(fila, 30);
+    imprimirFila(fila); // 10, 20, 30
+
+    dequeueValor(fila, 100); // Valor não encontrado.
+    dequeueValor(fila, 20); // O 20 foi excluído.
     
     // Libera a memória alocada
     free(fila->itens);
