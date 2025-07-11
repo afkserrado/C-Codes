@@ -263,6 +263,7 @@ void bubbleSort(ldll *lista) {
 
 // Função para ordenar a lista duplamente ligada com Insertion Sort
 void insertionSort(ldll *lista) {
+    
     // Falha de alocação
     if (lista == NULL) {
         printf("Memória não alocada para a lista.\n");
