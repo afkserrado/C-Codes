@@ -120,7 +120,7 @@ void inserir_node_ordenado (lslc *lista, node *novo) {
         }
 
         // Caso 2: o novo é o último item da lista
-        else if (posterior == lista->cabeca) {
+        else if (anterior == lista->cauda) {
             novo->prox = lista->cabeca;
             lista->cauda->prox = novo;
             lista->cauda = novo;
