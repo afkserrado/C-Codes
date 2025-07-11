@@ -224,6 +224,80 @@ void remover_node (ldll *lista, int chave) {
     }
 }
 
+// Função para ordenar a lista duplamente ligada
+void bubbleSort(ldll *lista) {
+    
+    // Falha de alocação
+    if (lista == NULL) {
+        printf("Memória não alocada para a lista.\n");
+        return;
+    }
+
+    // Lista vazia ou com apenas um nó
+    if (lista->cabeca == NULL || lista->cabeca->prox == NULL) {
+        return;  // Não há necessidade de ordenar
+    }
+
+    int trocou;
+    node *i, *j;
+    
+    // Percorrer a lista para ordenar
+    do {
+        trocou = 0;
+        i = lista->cabeca;
+
+        // Comparar os nós adjacentes
+        while (i != NULL && i->prox != NULL) {
+            j = i->prox;
+            if (i->chave > j->chave) {
+                // Trocar os valores das chaves
+                int temp = i->chave;
+                i->chave = j->chave;
+                j->chave = temp;
+                
+                // Marcar que houve uma troca
+                trocou = 1;
+            }
+            i = i->prox;
+        }
+    } while (trocou == 1);  // Repetir enquanto houver troca
+}
+
+// Função para ordenar a lista duplamente ligada com Insertion Sort
+void insertionSort(ldll *lista) {
+    // Falha de alocação
+    if (lista == NULL) {
+        printf("Memória não alocada para a lista.\n");
+        return;
+    }
+
+    // Lista vazia ou com apenas um nó
+    if (lista->cabeca == NULL || lista->cabeca->prox == NULL) {
+        return;  // Não há necessidade de ordenar
+    }
+
+    node *atual = lista->cabeca->prox;  // Começa do segundo nó
+    while (atual != NULL) {
+        node *chave = atual;
+        node *anterior = chave->ante;
+        
+        // Move a chave para a posição correta
+        while (anterior != NULL && chave->chave < anterior->chave) {
+            // Trocar as chaves dos nós
+            int temp = chave->chave;
+            chave->chave = anterior->chave;
+            anterior->chave = temp;
+
+            // Mover para o nó anterior
+            chave = anterior;
+            anterior = chave->ante;
+        }
+
+        // Passa para o próximo nó
+        atual = atual->prox;
+    }
+}
+
 // Imprime a lista
 void imprimir_lista (ldll *lista) {
     
@@ -270,15 +344,19 @@ void liberar_lista(ldll *lista) {
 int main(){
     ldll *lista = init_lista();
 
-    /*
+    
     inserir_node(lista, init_node(20));
     inserir_node(lista, init_node(37));
     inserir_node(lista, init_node(18));
     inserir_node(lista, init_node(40));
     inserir_node(lista, init_node(18));
-    inserir_node(lista, init_node(-1));
-
+    inserir_node(lista, init_node(100));
     imprimir_lista(lista);
+
+    printf("Lista ordenada\n");
+    insertionSort(lista);
+    imprimir_lista(lista);
+
     remover_node(lista, -1);
     printf("Depois\n");
     imprimir_lista(lista);
@@ -291,8 +369,9 @@ int main(){
     remover_node(lista, 100);
     printf("Depois\n");
     imprimir_lista(lista);
-    */
+    
 
+    /*
     inserir_node_ordenado(lista, init_node(20));
     inserir_node_ordenado(lista, init_node(37));
     inserir_node_ordenado(lista, init_node(18));
@@ -313,6 +392,7 @@ int main(){
     remover_node(lista, 100);
     printf("Depois\n");
     imprimir_lista(lista);
+    */
 
     // Libera a memória alocada para todos os nós e para a lista
     liberar_lista(lista);
