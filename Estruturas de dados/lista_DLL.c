@@ -147,13 +147,11 @@ void inserir_node_ordenado (ldll *lista, node *novo) {
         // Caso 1: o novo é o primeiro item da lista
         if (x == lista->cabeca) {
             novo->prox = lista->cabeca;
-            novo->ante = NULL;
             lista->cabeca->ante = novo;
             lista->cabeca = novo;
         }
         // Caso 2: o novo é o último item da lista
         else if (x == NULL) {
-            novo->prox = NULL;
             novo->ante = lista->cauda;
             lista->cauda->prox = novo;
             lista->cauda = novo;
@@ -344,7 +342,7 @@ void liberar_lista(ldll *lista) {
 int main(){
     ldll *lista = init_lista();
 
-    
+    /*
     inserir_node(lista, init_node(20));
     inserir_node(lista, init_node(37));
     inserir_node(lista, init_node(18));
@@ -369,9 +367,8 @@ int main(){
     remover_node(lista, 100);
     printf("Depois\n");
     imprimir_lista(lista);
-    
+    */
 
-    /*
     inserir_node_ordenado(lista, init_node(20));
     inserir_node_ordenado(lista, init_node(37));
     inserir_node_ordenado(lista, init_node(18));
@@ -392,7 +389,6 @@ int main(){
     remover_node(lista, 100);
     printf("Depois\n");
     imprimir_lista(lista);
-    */
 
     // Libera a memória alocada para todos os nós e para a lista
     liberar_lista(lista);
