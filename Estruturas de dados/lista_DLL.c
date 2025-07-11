@@ -296,6 +296,54 @@ void insertionSort(ldll *lista) {
     }
 }
 
+// Busca sequencial
+void buscaSequencial (ldll *lista, int chave) {
+
+    // Lista vazia
+    if (lista->cabeca == NULL) { 
+        printf("Lista vazia.\n");
+        return;
+    }
+
+    // Busca a chave
+    node *atual = lista->cabeca;
+    while (atual != NULL) {
+        // Chave encontrada
+        if (atual->chave == chave) {
+            printf("Chave: %d\n", atual->chave);
+            return;
+        }
+
+        atual = atual->prox;
+    }
+
+    // Chave não encontrada
+    printf("Chave não encontrada.\n");
+}
+
+// Busca sequencial ordenada
+void buscaSequencialOrdenada (ldll *lista, int chave) {
+
+    // Lista vazia
+    if (lista->cabeca == NULL) { 
+        printf("Lista vazia.\n");
+        return;
+    }
+
+    // Busca a chave
+    node *atual = lista->cabeca;
+    while (atual != NULL && chave >= atual->chave) {
+        // Chave encontrada
+        if (atual->chave == chave) {
+            printf("Chave: %d\n", atual->chave);
+            return;
+        }
+        atual = atual->prox;
+    }
+
+    printf("Chave não encontrada.\n");
+}
+
 // Imprime a lista
 void imprimir_lista (ldll *lista) {
     
