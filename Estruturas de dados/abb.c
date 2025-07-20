@@ -69,17 +69,17 @@ void atualizar_altura_no(no *x) {
 }
 
 // Atualiza a altura de todos os nós ancestrais
-void atualizar_alturas_ancestrais(no *x) {
-    while (x != NULL) {
-        int altura_anterior = x->altura;
-        atualizar_altura_no(x);
+void atualizar_alturas_ancestrais(no *mae_no) {
+    while (mae_no != NULL) {
+        int altura_anterior = mae_no->altura;
+        atualizar_altura_no(mae_no);
         
         // Se a altura não mudou, os ancestrais também não mudam
-        if (x->altura == altura_anterior) {
+        if (mae_no->altura == altura_anterior) {
             break;
         }
         
-        x = x->mae;
+        mae_no = mae_no->mae;
     }
 }
 
@@ -158,60 +158,60 @@ void remover_no (arvore *arv, int chave) {
     }
 
     // Chave encontrada
-    no *x; // Aponta para o nó que de fato será removido
+    no *no_removido; // Aponta para o nó que de fato será removido
 
     // Casos 1 e 2: alvo não tem filho ou tem apenas um filho
     if (alvo->esq == NULL || alvo->dir == NULL) {
-        x = alvo;
+        no_removido = alvo;
     // Caso 3: alvo tem dois filhos
     } else {
         // Encontra o sucessor em ordem (menor chave da subárvore à direita do alvo)
-        x = minimo(alvo->dir);
+        no_removido = minimo(alvo->dir);
     }
 
-    no *y; // Aponta para o filho de x (nó a ser removido) ou para NULL
-    if (x->esq != NULL) {
-        // Caso 2: x tem apenas filho à esquerda → y será x->esq
-        y = x->esq;
+    no *filho_do_removido; // Aponta para o filho de no_removido (nó a ser removido) ou para NULL
+    if (no_removido->esq != NULL) {
+        // Caso 2: no_removido tem apenas filho à esquerda → filho_do_removido será no_removido->esq
+        filho_do_removido = no_removido->esq;
     } else {
-        // Caso 1: x não tem filhos → x->dir == NULL → y será NULL
-        // Caso 2: x tem apenas filho à direita → y será x->dir
-        // Caso 3: x (sucessor em ordem) não tem filhos ou tem apenas filho à direita → y será x->dir
-        y = x->dir;
+        // Caso 1: no_removido não tem filhos → no_removido->dir == NULL → filho_do_removido será NULL
+        // Caso 2: no_removido tem apenas filho à direita → filho_do_removido será no_removido->dir
+        // Caso 3: no_removido (sucessor em ordem) não tem filhos ou tem apenas filho à direita → filho_do_removido será no_removido->dir
+        filho_do_removido = no_removido->dir;
     }
 
     // Se o filho existe, atualiza a sua mãe
-    if (y != NULL) {
-        y->mae = x->mae;
+    if (filho_do_removido != NULL) {
+        filho_do_removido->mae = no_removido->mae;
     }
 
     // Se o nó a remover for a raiz da árvore
-    if (x->mae == NULL) {
-        arv->raiz = y;
+    if (no_removido->mae == NULL) {
+        arv->raiz = filho_do_removido;
     }
     // Se ele for filho da esquerda
-    else if (x == x->mae->esq) {
-        x->mae->esq = y;
+    else if (no_removido == no_removido->mae->esq) {
+        no_removido->mae->esq = filho_do_removido;
     }
     // Se for filho da direita
     else {
-        x->mae->dir = y;
+        no_removido->mae->dir = filho_do_removido;
     }
 
     // Se o nó removido for o sucessor em ordem, copia sua chave no lugar do alvo
-    if (x != alvo) {
-        alvo->chave = x->chave;
+    if (no_removido != alvo) {
+        alvo->chave = no_removido->chave;
     }
 
     // Salva a mãe do nó que será removido para recalcular alturas depois
-    no *mae_removido = x->mae;
+    no *mae_do_removido = no_removido->mae;
 
     // Libera memória do nó removido
-    free(x);
+    free(no_removido);
     printf("\nNó removido: %d", chave);
 
     // Recalcula alturas de TODOS os ancestrais a partir do ponto apropriado
-    atualizar_alturas_ancestrais(mae_removido);
+    atualizar_alturas_ancestrais(mae_do_removido);
 }
 
 // Impressão dos nós in-ordem: ordem crescente dos dados (esquerda, raiz, direita)
@@ -303,20 +303,21 @@ int main() {
     printf("EM ORDEM (ordem crescente): ");
     imprimir_ordem(arv2->raiz);
 
-    /*printf("\nRemovendo a raiz (caso 3 - dois filhos):");
+    printf("\nRemovendo a raiz (caso 3 - dois filhos):");
     remover_no(arv2, 10);
     printf("\nEM ORDEM (ordem crescente): ");
-    imprimir_ordem(arv2->raiz);*/
+    imprimir_ordem(arv2->raiz);
 
-    /*printf("\n\nRemovendo nó com apenas filho à direita (caso 2):");
+    printf("\n\nRemovendo nó com apenas filho à direita (caso 2):");
+    inserir_no(arv2, init_no(10));
     remover_no(arv2, 5);
     printf("\nEM ORDEM (ordem crescente): ");
-    imprimir_ordem(arv2->raiz);*/
+    imprimir_ordem(arv2->raiz);
 
-    /*printf("\n\nRemovendo folha (caso 1):");
+    printf("\n\nRemovendo folha (caso 1):");
     remover_no(arv2, 13);
     printf("\nEM ORDEM (ordem crescente): ");
-    imprimir_ordem(arv2->raiz);*/
+    imprimir_ordem(arv2->raiz);
 
     printf("\n\nRemovendo nó com dois filhos novamente:");
     remover_no(arv2, 15);
