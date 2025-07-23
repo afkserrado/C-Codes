@@ -58,8 +58,18 @@ arvore *init_arvore () {
     return arv;
 }
 
+// Atualiza a altura de toda a árvore
+void calc_alt_arvore(no *x) {
+    if (x == NULL) {return;}
+
+    // Percorre a árvore recursivamente em pós-ordem, começando pela raiz
+    calc_alt_arvore(x->esq);
+    calc_alt_arvore(x->dir);
+    calc_alt_no(x);
+}
+
 // Atualiza a altura de um nó específico com base nos filhos
-void atualizar_altura_no(no *x) {
+void calc_alt_no(no *x) {
     if (x == NULL) return;
     
     int alt_esq = (x->esq != NULL) ? x->esq->altura : -1;
@@ -69,10 +79,10 @@ void atualizar_altura_no(no *x) {
 }
 
 // Atualiza a altura de todos os nós ancestrais
-void atualizar_alturas_ancestrais(no *mae_no) {
+void calc_alt_ancestrais(no *mae_no) {
     while (mae_no != NULL) {
         int altura_anterior = mae_no->altura;
-        atualizar_altura_no(mae_no);
+        calc_alt_no(mae_no);
         
         // Se a altura não mudou, os ancestrais também não mudam
         if (mae_no->altura == altura_anterior) {
@@ -80,6 +90,70 @@ void atualizar_alturas_ancestrais(no *mae_no) {
         }
         
         mae_no = mae_no->mae;
+    }
+}
+
+// Calcula o fator de balanceamento do nó (dir - esq)
+int calc_fb_no (no *x) {
+    int alt_esq = (x->esq != NULL) ? x->esq->altura : -1;
+    int alt_dir = (x->dir != NULL) ? x->dir->altura : -1;
+
+    return alt_dir - alt_esq; // Diferença entre as alturas das subárvores
+}
+
+// Rotação simples à direita
+void rt_dir(arvore *arv, no *v) {
+    no* u = v->esq;
+    no* t = u->dir; 
+
+    // Rotação
+    u->dir = v; // v se torna filho direito de u
+    v->esq = t; // t se torna filho esquerdo de v
+    v->mae = u; // u se torna mãe de v
+
+    if (t != NULL) {
+        t->mae = v; // v se torna mãe de t
+    }
+
+    // Atualiza a raiz da árvore
+    if (v->mae == NULL) {
+        arv->raiz = u;
+    }
+
+    // Atualiza as alturas
+    calc_alt_no(v);
+    calc_alt_no(u);
+}
+
+// Balanceia a árvore
+void balancear_arvore (arvore *arv, no *x) {
+    while (x != NULL) {
+        int fb = calc_fb_no(x);
+
+        // Caso 1: desbalanceamento à esquerda (fb < -1)
+        if (fb < -1 && calc_fb_no(x->esq) <= 0) {
+            //Rotação simples à direita
+            rt_dir(arv, x);
+        }
+
+        // Caso 2: desbalanceamento à direita (fb > 1)
+        else if (fb > 1 && calc_fb_no(x->dir) >= 0) {
+            // Rotação simples à esquerda
+            rt_esq(arv, x);
+        }
+
+        // Caso 3: rotação dupla esquerda-direita
+        else if (fb < -1 && calc_fb_no(x->esq) > 0) {
+            rt_esq_dir(arv, x);
+        }
+
+        // Caso 4: rotação dupla direita-esquerda
+        else if (fb > 1 && calc_fb_no(x->dir) < 0) {
+            rt_dir_esq(arv, x);
+        }
+
+        // Move x para o próximo ancestral
+        x = x->mae;
     }
 }
 
@@ -120,8 +194,11 @@ void inserir_no (arvore *arv, no *novo) {
     // Inicializa altura do novo nó como 0 (nó folha)
     novo->altura = 0;
 
-    // Recalcula altura de TODOS os ancestrais a partir da mãe do novo nó
-    atualizar_alturas_ancestrais(mae);
+    // Recalcula altura dos ancestrais a partir da mãe do novo nó
+    calc_alt_ancestrais(mae);
+
+    // Calcula o fator de balanceamento
+    balancear_arvore(arv, mae);
 }
 
 // Busca recursiva na ABB
@@ -226,7 +303,7 @@ void remover_no (arvore *arv, int chave, int flagImprimir) {
         printf("\nNó removido: %d", chave);
 
         // Recalcula alturas de TODOS os ancestrais a partir do ponto apropriado
-        atualizar_alturas_ancestrais(mae_alvo);
+        calc_alt_ancestrais(mae_alvo);
     }
 }
 
