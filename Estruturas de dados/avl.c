@@ -58,16 +58,6 @@ arvore *init_arvore () {
     return arv;
 }
 
-// Atualiza a altura de toda a árvore
-void calc_alt_arvore(no *x) {
-    if (x == NULL) {return;}
-
-    // Percorre a árvore recursivamente em pós-ordem, começando pela raiz
-    calc_alt_arvore(x->esq);
-    calc_alt_arvore(x->dir);
-    calc_alt_no(x);
-}
-
 // Atualiza a altura de um nó específico com base nos filhos
 void calc_alt_no(no *x) {
     if (x == NULL) return;
@@ -282,7 +272,7 @@ no *buscar_no (no *raiz, int chave) {
 }
 
 // Exclui um nó da árvore
-void remover_no (arvore *arv, int chave, int flagImprimir) {
+void remover_no (arvore *arv, int chave) {
     no *alvo = buscar_no(arv->raiz, chave); // Busca o nó a remover
 
     // Caso 1: chave não encontrada
@@ -343,7 +333,9 @@ void remover_no (arvore *arv, int chave, int flagImprimir) {
             }
         }
 
-        filho_alvo->mae = mae_alvo; // Filho do alvo aponta para a mãe do alvo
+        if (filho_alvo != NULL) {
+            filho_alvo->mae = mae_alvo; // Filho do alvo aponta para a mãe do alvo
+        }
         
         free(alvo);
     }
@@ -357,19 +349,37 @@ void remover_no (arvore *arv, int chave, int flagImprimir) {
             sucessor = sucessor->esq;
         }
 
-        int temp = sucessor->chave;
-        remover_no(arv, temp, 0); // Entra no caso 3
-        alvo->chave = temp; // Troca os dados
+        // Copia o valor do sucessor em ordem para o alvo
+        alvo->chave = sucessor->chave;
+
+        no *mae_sucessor = sucessor->mae;
+        no *filho_sucessor = sucessor->dir; // O sucessor só pode ter filho direito
+
+        // Conecta a mãe do sucessor ao filho do sucessor
+        if (mae_sucessor->esq == sucessor) {
+            mae_sucessor->esq = filho_sucessor;
+        }
+        else {
+            mae_sucessor->dir = filho_sucessor;
+        }
+
+        // Conecta o filho do sucessor à mãe do sucessor
+        if (filho_sucessor != NULL) {
+            filho_sucessor->mae = mae_sucessor;
+        }
+
+        free(sucessor);
+        mae_alvo = mae_sucessor; // Atualiza para recálculo da altura e balanceamento
     }
 
-    // Evita imprimir e recalcular alturas após chamada recursiva no caso 4
-    if (flagImprimir == 1) {
-        // Libera memória do nó removido
-        printf("\nNó removido: %d", chave);
+    // Libera memória do nó removido
+    printf("\nNó removido: %d", chave);
 
-        // Recalcula alturas de TODOS os ancestrais a partir do ponto apropriado
-        calc_alt_ancestrais(mae_alvo);
-    }
+    // Recalcula alturas de TODOS os ancestrais a partir do ponto apropriado
+    calc_alt_ancestrais(mae_alvo);
+
+    // Balanceia a árvore
+    balancear_arvore(arv, mae_alvo);
 }
 
 // Impressão dos nós in-ordem: ordem crescente dos dados (esquerda, raiz, direita)
@@ -422,13 +432,41 @@ int main() {
     arvore *arv2 = init_arvore();
 
     // Árvore 1
-    printf("Árvore 1:\n");
+    /*printf("Árvore 1:\n");
     inserir_no(arv1, init_no(9));
     inserir_no(arv1, init_no(4));
     inserir_no(arv1, init_no(12));
     inserir_no(arv1, init_no(2));
     inserir_no(arv1, init_no(7));
+    inserir_no(arv1, init_no(15));*/
+
+    /*printf("Árvore fb < -1 simples:\n");
+    inserir_no(arv1, init_no(50));
+    inserir_no(arv1, init_no(30));
+    inserir_no(arv1, init_no(20));
+    inserir_no(arv1, init_no(10));
+    inserir_no(arv1, init_no(25));*/
+
+    /*printf("Árvore fb > 1 simples:\n");
+    inserir_no(arv1, init_no(10));
+    inserir_no(arv1, init_no(20));*/
+    
+    /*printf("Árvore fb < -1 dupla (esq-dir):\n");
+    inserir_no(arv1, init_no(30));
+    inserir_no(arv1, init_no(20));
+    inserir_no(arv1, init_no(10));
+    inserir_no(arv1, init_no(15));*/
+
+    printf("Árvore fb > 1 dupla (dir-esq):\n");
+    inserir_no(arv1, init_no(50));
+    inserir_no(arv1, init_no(30));
+    inserir_no(arv1, init_no(20));
+    inserir_no(arv1, init_no(10));
     inserir_no(arv1, init_no(15));
+    inserir_no(arv1, init_no(25));
+    inserir_no(arv1, init_no(35));
+    inserir_no(arv1, init_no(40));
+    inserir_no(arv1, init_no(45));
 
     printf("EM ORDEM (ordem crescente): ");
     imprimir_ordem(arv1->raiz);
@@ -440,12 +478,12 @@ int main() {
     imprimir_posordem(arv1->raiz);
 
     // Busca por um valor
-    int valor_busca = 7;
+    /*int valor_busca = 7;
     no *resultado = buscar_no(arv1->raiz, valor_busca);
     if (resultado != NULL)
         printf("\nElemento %d encontrado na árvore.", valor_busca);
     else
-        printf("\nElemento %d não encontrado na árvore.", valor_busca);
+        printf("\nElemento %d não encontrado na árvore.", valor_busca);*/
 
     // Árvore 2
     printf("\n");
@@ -462,23 +500,23 @@ int main() {
     imprimir_ordem(arv2->raiz);
 
     printf("\nRemovendo a raiz (caso 3 - dois filhos):");
-    remover_no(arv2, 10, 1);
+    remover_no(arv2, 10);
     printf("\nEM ORDEM (ordem crescente): ");
     imprimir_ordem(arv2->raiz);
 
     printf("\n\nRemovendo nó com apenas filho à direita (caso 2):");
     inserir_no(arv2, init_no(10));
-    remover_no(arv2, 5, 1);
+    remover_no(arv2, 5);
     printf("\nEM ORDEM (ordem crescente): ");
     imprimir_ordem(arv2->raiz);
 
     printf("\n\nRemovendo folha (caso 1):");
-    remover_no(arv2, 13, 1);
+    remover_no(arv2, 13);
     printf("\nEM ORDEM (ordem crescente): ");
     imprimir_ordem(arv2->raiz);
 
     printf("\n\nRemovendo nó com dois filhos novamente:");
-    remover_no(arv2, 15, 1);
+    remover_no(arv2, 15);
     printf("\nEM ORDEM (ordem crescente): ");
     imprimir_ordem(arv2->raiz);
 
