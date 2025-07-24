@@ -103,8 +103,9 @@ int calc_fb_no (no *x) {
 
 // Rotação simples à direita
 void rt_dir(arvore *arv, no *v) {
-    no* u = v->esq;
-    no* t = u->dir; 
+    no *u = v->esq;
+    no *t = u->dir; 
+    no *mae_v = v->mae;
 
     // Rotação
     u->dir = v; // v se torna filho direito de u
@@ -115,14 +116,78 @@ void rt_dir(arvore *arv, no *v) {
         t->mae = v; // v se torna mãe de t
     }
 
-    // Atualiza a raiz da árvore
-    if (v->mae == NULL) {
+    u->mae = mae_v; // Mãe de v se torna mãe de u
+
+    // v era a raiz
+    if (mae_v == NULL) {
         arv->raiz = u;
+    }
+    // v não era a raiz
+    else if (mae_v->esq == v) {
+        mae_v->esq = u;
+    }
+    else {
+        mae_v->dir = u;
     }
 
     // Atualiza as alturas
     calc_alt_no(v);
     calc_alt_no(u);
+}
+
+// Rotação simples à esquerda
+void rt_esq(arvore *arv, no *v) {
+    no *u = v->dir;
+    no *t = u->esq; 
+    no *mae_v = v->mae;
+
+    // Rotação
+    u->esq = v; // v se torna filho esquerdo de u
+    v->dir = t; // t se torna filho direito de v
+    v->mae = u; // u se torna mãe de v
+
+    if (t != NULL) {
+        t->mae = v; // v se torna mãe de t
+    }
+
+    u->mae = mae_v; // Mãe de v se torna mãe de u
+    // v era a raiz
+    if (mae_v == NULL) {
+        arv->raiz = u;
+    }
+    // v não era a raiz
+    else if (mae_v->esq == v) {
+        mae_v->esq = u;
+    }
+    else {
+        mae_v->dir = u;
+    }
+
+    // Atualiza as alturas
+    calc_alt_no(v);
+    calc_alt_no(u);
+}
+
+// Rotação dupla esquerda-direita
+void rt_esq_dir(arvore *arv, no *v) {
+    no* u = v->esq;
+
+    // Rotação à esquerda no filho esquerdo de v
+    rt_esq(arv, u);
+
+    // Rotação à direita em v
+    rt_dir(arv, v);
+}
+
+// Rotação dupla direita-esquerda
+void rt_dir_esq(arvore *arv, no *v) {
+    no* u = v->dir;
+
+    // Rotação à direita no filho direito de v
+    rt_dir(arv, u);
+
+    // Rotação à esquerda em v
+    rt_esq(arv, v);
 }
 
 // Balanceia a árvore
