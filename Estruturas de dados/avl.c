@@ -182,6 +182,7 @@ void rt_dir_esq(arvore *arv, no *v) {
 
 // Balanceia a árvore
 void balancear_arvore (arvore *arv, no *x) {
+    // Percorre os ancestrais de um nó x até a raiz
     while (x != NULL) {
         int fb = calc_fb_no(x);
 
@@ -219,7 +220,7 @@ void inserir_no (arvore *arv, no *novo) {
     no *atual = arv->raiz;
 
     // Busca a posição do novo nó na árvore
-    while (atual != NULL) {
+    while (atual != NULL) { // Percorre a árvore até encontrar um nó folha
         mae = atual; // Salva a mãe
 
         if (novo->chave < atual->chave) { // Anda para a esquerda do atual nó
