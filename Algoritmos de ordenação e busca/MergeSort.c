@@ -97,5 +97,7 @@ int main () {
     imprimirVetor(A, tam);
 
     printf("\n\n");
+
+    free(A);
     return 0;
 }
