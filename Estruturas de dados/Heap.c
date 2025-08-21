@@ -14,6 +14,7 @@ void HeapSobe (int heap[], int i);
 void HeapImprime (int heap[], int n);
 int HeapRemove (int heap[], int *n);
 void Heapfy (int heap[], int i, int n);
+void ConstroiHeap (int heap[], int n);
 
 void troca (int *x, int *y) {
     int temp = *x;
@@ -62,7 +63,7 @@ void HeapSobe (int heap[], int i) {
         // Pai é menor que o filho
         if (heap[j] < heap[i]) {
             troca(&heap[j], &heap[i]); // Sobe o filho
-            HeapSobe(heap, j);
+            HeapSobe(heap, j); // Chamada recursiva
         }
     }
 }
@@ -76,9 +77,9 @@ int HeapRemove (int heap[], int *n) {
     }
     
     int raiz = heap[1];
-    heap[1] = heap[*n]; // Troca o último elemento do Heap com a raiz
+    heap[1] = heap[*n]; // Remove a raiz
     (*n)--; // Exclusão lógica
-    Heapfy(heap, 1, *n); // Mantém a propriedade do max heap
+    Heapfy(heap, 1, *n); // Mantém a propriedade do Max Heap
     return raiz;
 }
 
@@ -93,14 +94,21 @@ void Heapfy (int heap[], int i, int n) {
         maior = esq;
     }
 
-    // Filho direito é maior que o filho esquerdo
+    // Filho direito é maior que o pai ou o filho esquerdo
     if (dir <= n && heap[dir] > heap[maior]) {
         maior = dir;
     }
 
     if (maior != i) {
         troca(&heap[maior], &heap[i]); // Sobe o filho
-        Heapfy(heap, maior, n);
+        Heapfy(heap, maior, n); // Chamada recursiva
+    }
+}
+
+// Reorganiza um vetor inteiro para que ele siga a propriedade do Max Heap
+void ConstroiHeap (int A[], int n) {
+    for (int i = n/2; i >= 1; i--) { // Começa do meio do vetor até a raiz
+        Heapfy(A, i, n); // Aplica o Heapfy em cada nó
     }
 }
 
@@ -114,6 +122,7 @@ void HeapImprime (int heap[], int n) {
 
 int main () {
     int heap[max];
+    int A[max] = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int tam = 0; // Tamanho da heap
 
     // Inserindo elementos no Heap
@@ -136,6 +145,14 @@ int main () {
     printf("Elemento removido: %d\n", raiz);
     printf("Heap após remoção: ");
     HeapImprime(heap, tam);
+
+    // Heapyfica um vetor qualquer
+    int n = sizeof(A)/sizeof(A[0]) - 1; // Qtd de elementos do vetor A, desprezando i = 0
+    printf("Vetor A antes do Heapfy: ");
+    HeapImprime(A, n);
+    ConstroiHeap(A, n);
+    printf("Vetor A após o Heapfy: ");
+    HeapImprime(A, n);
 
     return 0;
 }
