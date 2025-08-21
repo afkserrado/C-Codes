@@ -1,0 +1,141 @@
+// ## Max Heap ## 
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define max 11 // 10 + 1 (índice 0, que é desprezado)
+
+// Funções do heap
+void troca (int *x, int *y);
+int filhoEsq (int i);
+int filhoDir (int i);
+void HeapInsere (int heap[], int num, int *n);
+void HeapSobe (int heap[], int i);
+void HeapImprime (int heap[], int n);
+int HeapRemove (int heap[], int *n);
+void Heapfy (int heap[], int i, int n);
+
+void troca (int *x, int *y) {
+    int temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+// Calcula a posição do pai de um elemento na posição i
+int pai (int i) {
+    return i / 2;
+}
+
+// Calcula o filho esquerdo de um elemento na posição i
+int filhoEsq (int i) {
+    return 2 * i;
+}
+
+// Calcula o filho direito de um elemento na posição i
+int filhoDir (int i) {
+    return 2 * i + 1;
+}
+
+// Insere um elemento no Heap
+void HeapInsere (int heap[], int num, int *n) {
+    // Heap cheio
+    if (*n >= max) {
+        printf("Heap cheio!\n");
+        return;
+    }
+    
+    (*n)++; // Incrementa o tamanho da heap
+    heap[*n] = num; // Insere no final da heap
+    HeapSobe(heap, *n); // Mantém a propriedade do Max Heap
+
+    /*
+    Obs.: no Heap o índice inicia na posição 1. Por isso o tamanho do Heap é incrementado antes da inserção do novo elemento no vetor. Isso é necessário para simplificar o cálculo dos índices (pai e filhos). Portanto, a raiz do Heap ocupa o índice 1 e o índice 0 sempre é desprezado.
+    */
+}
+
+// Mantém a propriedade do Max Heap após a inserção
+void HeapSobe (int heap[], int i) {
+    int j = pai(i); // Pai do elemento recém-inserido
+    
+    // Verifica se o elemento na posição i é não-raiz
+    if (i > 1) {
+        // Pai é menor que o filho
+        if (heap[j] < heap[i]) {
+            troca(&heap[j], &heap[i]); // Sobe o filho
+            HeapSobe(heap, j);
+        }
+    }
+}
+
+// Remove um elemento do Heap
+int HeapRemove (int heap[], int *n) {
+    // Heap vazio
+    if (*n <= 0) {
+        printf("Heap vazio!\n");
+        return -1;
+    }
+    
+    int raiz = heap[1];
+    heap[1] = heap[*n]; // Troca o último elemento do Heap com a raiz
+    (*n)--; // Exclusão lógica
+    Heapfy(heap, 1, *n); // Mantém a propriedade do max heap
+    return raiz;
+}
+
+// Mantém a propriedade do Max Heap após a exclusão
+void Heapfy (int heap[], int i, int n) {
+    int esq = filhoEsq(i);
+    int dir = filhoDir(i);
+    int maior = i;
+
+    // Filho esquerdo é maior que o pai
+    if (esq <= n && heap[esq] > heap[i]) {
+        maior = esq;
+    }
+
+    // Filho direito é maior que o filho esquerdo
+    if (dir <= n && heap[dir] > heap[maior]) {
+        maior = dir;
+    }
+
+    if (maior != i) {
+        troca(&heap[maior], &heap[i]); // Sobe o filho
+        Heapfy(heap, maior, n);
+    }
+}
+
+// Exibir o conteúdo do Heap
+void HeapImprime (int heap[], int n) {
+    for (int i = 1; i <= n; i++) {
+        printf("%d ", heap[i]);
+    }
+    printf("\n");
+}
+
+int main () {
+    int heap[max];
+    int tam = 0; // Tamanho da heap
+
+    // Inserindo elementos no Heap
+    HeapInsere(heap, 1, &tam);
+    HeapInsere(heap, 4, &tam);
+    HeapInsere(heap, 2, &tam);
+    HeapInsere(heap, 3, &tam);
+    HeapInsere(heap, 9, &tam);
+    HeapInsere(heap, 7, &tam);
+    HeapInsere(heap, 8, &tam);
+    HeapInsere(heap, 10, &tam);
+    HeapInsere(heap, 14, &tam);
+    HeapInsere(heap, 16, &tam);
+
+    printf("Heap após inserções: ");
+    HeapImprime(heap, tam);
+
+    // Removendo o maior elemento (raiz)
+    int raiz = HeapRemove(heap, &tam);
+    printf("Elemento removido: %d\n", raiz);
+    printf("Heap após remoção: ");
+    HeapImprime(heap, tam);
+
+    return 0;
+}
