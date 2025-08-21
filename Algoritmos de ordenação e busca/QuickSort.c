@@ -26,9 +26,9 @@ int particionar (int *V, int ini, int fim) {
 
 void quickSort (int *V, int ini, int fim) {
     if (ini < fim) {
-        int pivo = particionar(V, ini, fim);
-        quickSort(V, ini, pivo - 1); // Metade à esquerda do pivô
-        quickSort(V, pivo + 1, fim); // Metade à direita do pivô
+        int pos = particionar(V, ini, fim); // Posição do pivô
+        quickSort(V, ini, pos - 1); // Metade à esquerda do pivô
+        quickSort(V, pos + 1, fim); // Metade à direita do pivô
     }
 }
 
