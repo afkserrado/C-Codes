@@ -79,10 +79,11 @@ int HeapRemove (int heap[], int *n) {
     // Elemento a ser removido
     int raiz = heap[1];
 
-    // Troca o primeiro e último elementos de posição
-    heap[1] = heap[*n]; // Coloca o último elemento na raiz
-    heap[*n] = raiz; // Coloca a raiz no final
-    (*n)--; // Exclusão lógica
+    // Troca a raiz com o último elemento
+    troca(&heap[1], &heap[*n]);
+
+    // Exclusão lógica
+    (*n)--; 
 
     Heapfy(heap, 1, *n); // Mantém a propriedade do Max Heap
     return raiz;
