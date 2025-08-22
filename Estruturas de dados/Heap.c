@@ -76,9 +76,14 @@ int HeapRemove (int heap[], int *n) {
         return -1;
     }
     
+    // Elemento a ser removido
     int raiz = heap[1];
-    heap[1] = heap[*n]; // Remove a raiz
+
+    // Troca o primeiro e último elementos de posição
+    heap[1] = heap[*n]; // Coloca o último elemento na raiz
+    heap[*n] = raiz; // Coloca a raiz no final
     (*n)--; // Exclusão lógica
+
     Heapfy(heap, 1, *n); // Mantém a propriedade do Max Heap
     return raiz;
 }
@@ -112,6 +117,30 @@ void ConstroiHeap (int A[], int n) {
     }
 }
 
+// Ordena o vetor
+void HeapSort (int V[], int n) {
+    // Constrói o Max Heap
+    ConstroiHeap(V, n);
+
+    // Ordena o vetor
+    for (int i = n; i >= 1; i--) {
+        troca(&V[1], &V[i]); // Troca a raiz (maior) com o último elemento
+        n--; // Reduz o tamanho do Heap
+        Heapfy(V, 1, n); // Mantém a propriedade do do Max Heap
+    }
+}
+
+// Ordena o vetor
+void HeapSort2 (int V[], int *n) {
+    // Constrói o Max Heap
+    ConstroiHeap(V, *n);
+
+    // Ordena o vetor
+    for (int i = *n; i >= 1; i--) {
+        HeapRemove(V, n);
+    }
+}
+
 // Exibir o conteúdo do Heap
 void HeapImprime (int heap[], int n) {
     for (int i = 1; i <= n; i++) {
@@ -123,6 +152,8 @@ void HeapImprime (int heap[], int n) {
 int main () {
     int heap[max];
     int A[max] = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int V[max] = {-1, 1, 4, 2, 3, 9, 7, 8, 10, 14, 16};
+    int Z[max] = {-1, 1, 4, 2, 3, 9, 7, 8, 10, 14, 16};
     int tam = 0; // Tamanho da heap
 
     // Inserindo elementos no Heap
@@ -153,6 +184,27 @@ int main () {
     ConstroiHeap(A, n);
     printf("Vetor A após o Heapfy: ");
     HeapImprime(A, n);
+    printf("\n");
+
+    // Ordena o vetor
+    n = sizeof(V)/sizeof(V[0]) - 1; // Qtd de elementos do vetor V, desprezando i = 0
+    printf("Heap Sort sem HeapRemove: \n");
+    printf("Vetor V antes do Heap Sort 1: ");
+    HeapImprime(V, n);
+    HeapSort(V, n);
+    printf("Vetor V após o Heap Sort 1: ");
+    HeapImprime(V, n);
+    printf("\n");
+
+    // Ordena o vetor com o HeapSort2, que utiliza o HeapRemove
+    n = sizeof(Z)/sizeof(Z[0]) - 1; // Qtd de elementos do vetor Z, desprezando i = 0
+    int m = n; // Conserva a qtd de elementos do vetor Z
+    printf("Heap Sort com HeapRemove: \n");
+    printf("Vetor Z antes do Heap Sort 2: ");
+    HeapImprime(Z, n);
+    HeapSort2(Z, &n);
+    printf("Vetor Z após o Heap Sort 2: ");
+    HeapImprime(Z, m);
 
     return 0;
 }
