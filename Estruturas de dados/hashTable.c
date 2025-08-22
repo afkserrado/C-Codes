@@ -9,6 +9,7 @@
     3.2 Se for, chama a função tabela_cheia
         3.2.1 Dobrar o tamanho da tabela com realloc
         3.2.2 Recalcular o hash de todas as matrículas
+        ...
 */
 
 #include <stdio.h>
