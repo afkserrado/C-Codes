@@ -30,7 +30,7 @@ int insere (HashTable *tabela, long int matricula);
 void redimensiona (HashTable *tabela);
 int busca (HashTable *tabela, long int matricula);
 long int removeMat (HashTable *tabela, long int matricula);
-void reorganiza(HashTable *tabela, long int matricula, int probeIndex);
+void reorganiza(HashTable *tabela, int probeIndex);
 
 // Inicializa a tabela
 HashTable *init_hash () {
@@ -174,7 +174,7 @@ long int removeMat (HashTable *tabela, long int matricula) {
     int qtdMat_Inicial = tabela->qtdMat; // Guarda a qtd de elementos antes da remoção
 
     // Reorganiza os elementos deslocados
-    reorganiza(tabela, matricula, probeIndex);
+    reorganiza(tabela, probeIndex);
 
     // Atualiza a qtd de matrículas na tabela
     tabela->qtdMat = qtdMat_Inicial - 1;
@@ -182,7 +182,7 @@ long int removeMat (HashTable *tabela, long int matricula) {
     return matricula;
 }
 
-void reorganiza (HashTable *tabela, long int matricula, int indexAtual) {
+/*void reorganiza (HashTable *tabela, long int matricula, int indexAtual) {
     // Recalcula o índice inicial da matrícula removida    
     unsigned int indexInicial = hash(tabela->capacidade, matricula);
 
@@ -205,9 +205,32 @@ void reorganiza (HashTable *tabela, long int matricula, int indexAtual) {
             // Guarda a matrícula deslocada e remove temporariamente da tabela
             long int matriculaMovida = tabela->matriculas[probeIndex];
             tabela->matriculas[probeIndex] = -1;
+            tabela->qtdMat--;
             
             // Insere a matrícula deslocada no índice correto
             insere(tabela, matriculaMovida);
+        }
+    }
+}*/
+
+void reorganiza (HashTable *tabela, int indexAtual) {
+    // Percorre as posições subsequentes ao elemento removido, de forma linear
+    for (int i = indexAtual + 1; i < tabela->capacidade; i++) {
+        if (tabela->matriculas[i] == -1) {
+            break; // Não há mais elementos. A partir daqui, todos os índices estão vazios
+        }
+        
+        // Calcula o índice ideal deste elemento
+        int indexIdeal = hash(tabela->capacidade, tabela->matriculas[i]);
+        
+        // Se o elemento não está no seu lugar ideal
+        if (i != indexIdeal) {
+            long int matriculaMovida = tabela->matriculas[i]; // Guarda a matrícula
+            tabela->matriculas[i] = -1; // Remove a matrícula temporariamente
+            tabela->qtdMat--; // Decrementa a qtd temporariamente
+            
+            // Reinsere a matrícula (se possível, no indexIdeal)
+            insere(tabela, matriculaMovida); 
         }
     }
 }
