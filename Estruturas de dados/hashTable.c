@@ -1,7 +1,5 @@
 // ## Hash Table com Endereçamento Fechado e Expansão Dinâmica ##
 
-//teste
-
 #include <stdio.h>
 #include <stdlib.h>
 
