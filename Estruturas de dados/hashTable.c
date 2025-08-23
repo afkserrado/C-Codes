@@ -1,21 +1,11 @@
-// ## Hash Table com Endereçamento Fechado
-
-// Expansão dinâmica da tabela hash
-/*
-1. Att qtd_mat, qtd_disp e recalcular proporcao a cada inserção;
-2. Att qtd_mat, qtd_disp e recalcular proporcao a cada remoção;
-3. Na inserção, verificar se a proporcao é maior ou igual a 0,90;
-    3.1 Se não for, insere normalmente;
-    3.2 Se for, chama a função tabela_cheia
-        3.2.1 Dobrar o tamanho da tabela com realloc
-        3.2.2 Recalcular o hash de todas as matrículas
-*/
+// ## Hash Table com Endereçamento Fechado e Expansão Dinâmica ##
 
 #include <stdio.h>
 #include <stdlib.h>
 
 // Constantes e variáveis globais
-int tam = 20; // Tamanho inicial da tabela
+int tamTab = 5; // Tamanho inicial da tabela
+#define ocupMax 0.80 // Taxa de ocupação máxima da tabela
 
 // Tipos enumerados
 typedef enum status {
@@ -28,18 +18,19 @@ typedef enum status {
 // Estrutura da Hash (endereçamento fechado)
 typedef struct HashTable {
     long int *matriculas; // Array para armazenar os números de matrícula
-    int qtd_mat; // Quantidade de matrículas cadastradas
-    int qtd_disp; // Quantidade de espaços disponíveis
-    int proporcao; // qtd_disp / qtd_mat
+    int qtdMat; // Quantidade de matrículas cadastradas
+    int capacidade; // Quantidade de espaços disponíveis
 } HashTable;
 
 // Cabeçalho
 HashTable *init_hash ();
-unsigned int hash (long int matricula);
-unsigned int rehash (unsigned int index, int i);
+unsigned int hash (int capacidade, long int matricula);
+unsigned int ProbingLinear (int capacidade, unsigned int index, int i);
 int insere (HashTable *tabela, long int matricula);
+void redimensiona (HashTable *tabela);
 int busca (HashTable *tabela, long int matricula);
-int removeMat (HashTable *tabela, long int matricula);
+long int removeMat (HashTable *tabela, long int matricula);
+void reorganiza(HashTable *tabela, long int matricula, int probeIndex);
 
 // Inicializa a tabela
 HashTable *init_hash () {
@@ -53,7 +44,7 @@ HashTable *init_hash () {
     }
 
     // Aloca memória para as matrículas da tabela   
-    tabela->matriculas = (long int *)malloc(sizeof(long int) * tam);
+    tabela->matriculas = (long int *)malloc(sizeof(long int) * tamTab);
 
     // Verifica a alocação de memória
     if (tabela->matriculas == NULL) {
@@ -62,35 +53,44 @@ HashTable *init_hash () {
     }
 
     // Inicializa a tabela com valores inválidos
-    for (int i = 0; i < tam; i++) {
+    for (int i = 0; i < tamTab; i++) {
         tabela->matriculas[i] = -1;
     }
+
+    tabela->capacidade = tamTab;
+    tabela->qtdMat = 0;
 
     return tabela;
 }
 
 // Função hash: aplica módulo 20 para determinar os índices
-unsigned int hash (long int matricula) {
-    return matricula % tam;
+unsigned int hash (int capacidade, long int matricula) {
+    return matricula % capacidade;
 }
 
-unsigned int rehash (unsigned int index, int i) {
-    return (index + i) % tam;
+// Calcula um novo índice em caso de colisão
+unsigned int ProbingLinear (int capacidade, unsigned int index, int i) {
+    return (index + i) % capacidade;
 }
 
 // Função para inserir uma matrícula na hash table
 int insere (HashTable *tabela, long int matricula) {  
-    unsigned int index = hash(matricula);
+    unsigned int index = hash(tabela->capacidade, matricula);
 
     // Verifica se a tabela está cheia
+    float txOcup = (float)tabela->qtdMat / tabela->capacidade;
+    if (txOcup >= ocupMax) {
+        redimensiona(tabela);
+    }
 
-    // Rehash com Probing Linear para gerenciamento de colisões
-    for (int i = 0; i < tam; i++) {
-        unsigned int probeIndex = rehash(index, i);
+    // Probing Linear para gerenciamento de colisões
+    for (int i = 0; i < tabela->capacidade; i++) {
+        unsigned int probeIndex = ProbingLinear(tabela->capacidade, index, i);
 
         // Index vazio
         if (tabela->matriculas[probeIndex] == -1) {
             tabela->matriculas[probeIndex] = matricula;
+            tabela->qtdMat++;
             return SUCESSO;
         }
 
@@ -99,16 +99,53 @@ int insere (HashTable *tabela, long int matricula) {
         }
     }
 
-    //return TABELA_CHEIA; // Tabela cheia
+    return TABELA_CHEIA;
 }
  
+// Redimensiona a tabela quando a txOcup chega no limite
+void redimensiona (HashTable *tabela) {
+    int capacidadeAntiga = tabela->capacidade;
+    int capacidadeNova;
+    
+    // Dobra a capacidade da tabela
+    capacidadeNova = capacidadeAntiga * 2;
+     
+    // Realoca espaço
+    long int *novaTabela = (long int *)realloc(tabela->matriculas, sizeof(long int) * capacidadeNova);
+
+    // Verifica a alocação de memória
+    if (novaTabela == NULL) {
+        printf("Não foi possível realocar memória para as matrículas.\n");
+        return;
+    }
+
+    // Reinicializa os campos da tabela
+    tabela->matriculas = novaTabela;
+    tabela->capacidade = capacidadeNova;
+    tabela->qtdMat = 0;
+
+    // Inicializa os novos espaços da tabela com -1 (vazio)
+    for (int i = tabela->capacidade / 2; i < tabela->capacidade; i++) {
+        tabela->matriculas[i] = -1;
+    }
+
+    // Re-hash dos elementos existentes (redistribuição)
+    for (int i = 0; i < capacidadeAntiga; i++) {
+        if (tabela->matriculas[i] != -1) {
+            long int matricula = tabela->matriculas[i]; // Guarda a matrícula
+            tabela->matriculas[i] = -1; // Remove o elemento temporariamente
+            insere(tabela, matricula); // Reinsere o elemento
+        }
+    }
+}
+
 // Função para buscar uma matrícula na hash table
 int busca (HashTable *tabela, long int matricula) {
-    unsigned int index = hash(matricula);
+    unsigned int index = hash(tabela->capacidade, matricula);
 
     // Rehash com Probing Linear para buscar a matrícula pelo index
-    for (int i = 0; i < tam; i++) {
-        unsigned int probeIndex = rehash(index, i);
+    for (int i = 0; i < tabela->capacidade; i++) {
+        unsigned int probeIndex = ProbingLinear(tabela->capacidade, index, i);
 
         // Matrícula encontrada
         if (tabela->matriculas[probeIndex] == matricula) {
@@ -124,7 +161,7 @@ int busca (HashTable *tabela, long int matricula) {
     return NAO_EXISTE; // Matrícula não encontrada
 }
 
-int removeMat (HashTable *tabela, long int matricula) {
+long int removeMat (HashTable *tabela, long int matricula) {
     int probeIndex = busca(tabela, matricula);
 
     // Matrícula não encontrada
@@ -134,12 +171,52 @@ int removeMat (HashTable *tabela, long int matricula) {
 
     // Matrícula encontrada
     tabela->matriculas[probeIndex] = -1; // Remove a matrícula
-    return EXISTE;
+    int qtdMat_Inicial = tabela->qtdMat; // Guarda a qtd de elementos antes da remoção
+
+    // Reorganiza os elementos deslocados
+    reorganiza(tabela, matricula, probeIndex);
+
+    // Atualiza a qtd de matrículas na tabela
+    tabela->qtdMat = qtdMat_Inicial - 1;
+
+    return matricula;
+}
+
+void reorganiza (HashTable *tabela, long int matricula, int indexAtual) {
+    // Recalcula o índice inicial da matrícula removida    
+    unsigned int indexInicial = hash(tabela->capacidade, matricula);
+
+    // Percorre os elementos que estão em posições após o removido
+    for (int i = indexAtual + 1; i < tabela->capacidade; i++) {
+        unsigned int probeIndex = ProbingLinear(tabela->capacidade, indexInicial, i);
+
+        // Verifica se algum elemento foi deslocado
+        // Se matriculas[probeIndex] == -1, não houve colisão
+        // Isto é, não houve realocação/deslocamento de elemento nessa posição
+        if (tabela->matriculas[probeIndex] == -1) {
+            break; // Não há mais elementos deslocados
+        }
+
+        // Calcula o index original da matrícula
+        unsigned indexOriginal = hash(tabela->capacidade, tabela->matriculas[probeIndex]);
+
+        // Verifica se o elemento foi deslocado e precisa ser realocado
+        if (indexOriginal != probeIndex) {
+            // Guarda a matrícula deslocada e remove temporariamente da tabela
+            long int matriculaMovida = tabela->matriculas[probeIndex];
+            tabela->matriculas[probeIndex] = -1;
+            
+            // Insere a matrícula deslocada no índice correto
+            insere(tabela, matriculaMovida);
+        }
+    }
 }
 
 // Função para imprimir as matrículas
 void imprime (HashTable *tabela) {
-    for (int i = 0; i < tam; i++) {
+    float txOcup = (float)tabela->qtdMat / tabela->capacidade;
+    printf("qtdMat = %d | Capacidade = %d | txOcup = %.2f\n", tabela->qtdMat, tabela->capacidade, txOcup);
+    for (int i = 0; i < tabela->capacidade; i++) {
         if (tabela->matriculas[i] != -1) {
             printf("Índice %d: %ld\n", i, tabela->matriculas[i]);
         }
@@ -151,14 +228,23 @@ int main () {
     // Inicializa a hash table
     HashTable *tabela = init_hash();
 
+    long int retorno;
+
     // Inserindo números de matrícula
     printf("Inserção: \n");
-    insere(tabela, 12345678901);
-    insere(tabela, 23456789012);
-    insere(tabela, 34567890123);
-    insere(tabela, 45678901234);
-    insere(tabela, 12345678902);
-    insere(tabela, 12345678901);
+    long int matriculas[] = {12345678901, 12345678901, 12335678901, 23456789012, 34567890123, 45678901234, 12345678905, 12345678906};
+    int qtd = sizeof(matriculas) / sizeof(matriculas[0]);
+
+    for (int i = 0; i < qtd; i++) {
+        retorno = insere(tabela, matriculas[i]);
+
+        if (retorno == EXISTE) {
+            printf("Matrícula %ld já cadastrada.\n", matriculas[i]);
+        }
+        else if (retorno == TABELA_CHEIA) {
+            printf("Tabela cheia. Matrícula %ld não cadastrada.\n", matriculas[i]);
+        }
+    }
 
     // Imprimindo a tabela
     imprime(tabela);
@@ -167,18 +253,26 @@ int main () {
     // Buscando matrícula
     printf("Busca: \n");
     long int matricula = 23456789012;
-    int index = busca(tabela, matricula);
-    if (index != NAO_EXISTE) {
-        printf("Matrícula %ld encontrada no índice %d\n", matricula, index);
-    } else {
-        printf("Matrícula %ld não encontrada\n", matricula);
+    retorno = busca(tabela, matricula);
+    if (retorno != NAO_EXISTE) {
+        printf("Matrícula %ld encontrada no índice %ld.\n", matricula, retorno);
+    } 
+    else {
+        printf("Matrícula %ld não encontrada.\n", matricula);
     }
     printf("\n");
 
     // Removendo matrícula
     printf("Remoção: \n");
-    removeMat(tabela, 23456789012);
-    imprime(tabela);
+    matricula = 23456789012;
+    retorno = removeMat(tabela, matricula);
+    if (retorno != NAO_EXISTE) {
+        printf("Matrícula %ld removida.\n", retorno);
+        imprime(tabela);
+    }
+    else {
+        printf("Matrícula %ld não encontrada.\n", matricula);
+    }    
 
     // Libera a memória
     free(tabela->matriculas);
